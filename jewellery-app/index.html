@@ -362,7 +362,7 @@
       // --- Fetch GOLD ---
       const goldRes = await fetch("https://www.goldapi.io/api/XAU/INR", {
         headers: {
-          "x-access-token": "goldapi-4pborsmhfwszkn-io",
+          "x-access-token": "goldapi-b21ey0smhg366il-io",
           "Content-Type": "application/json"
         }
       });
@@ -372,14 +372,14 @@
       // --- Fetch SILVER ---
       const silverRes = await fetch("https://www.goldapi.io/api/XAG/INR", {
         headers: {
-          "x-access-token": "goldapi-4pborsmhfwszkn-io",
+          "x-access-token": "goldapi-b21ey0smhg366il-io",
           "Content-Type": "application/json"
         }
       });
       if (!silverRes.ok) throw new Error("Silver fetch failed");
       const silverData = await silverRes.json();
 
-      // --- Convert from per troy ounce to per gram ---
+      // --- Convert per troy ounce → per gram ---
       const ozToGram = 31.1035;
       const goldPerGram = goldData.price / ozToGram;
       const silverPerGram = silverData.price / ozToGram;
@@ -395,15 +395,50 @@
       document.getElementById("gold-change").textContent = "+ 3% GST applicable";
       document.getElementById("silver-change").textContent = "per gram";
 
+      // Save last update to localStorage
+      localStorage.setItem("lastMetalUpdate", Date.now());
+      localStorage.setItem("goldPrice", goldPerGram.toFixed(2));
+      localStorage.setItem("silverPrice", silverPerGram.toFixed(2));
+
     } catch (err) {
       console.error("Failed to fetch metal rates:", err);
-      document.getElementById("gold-price").textContent = "Error";
-      document.getElementById("silver-price").textContent = "Error";
+
+      // Try to show last saved values if available
+      const savedGold = localStorage.getItem("goldPrice");
+      const savedSilver = localStorage.getItem("silverPrice");
+      if (savedGold && savedSilver) {
+        document.getElementById("gold-price").textContent = "₹" + savedGold;
+        document.getElementById("silver-price").textContent = "₹" + savedSilver;
+        document.getElementById("gold-change").textContent = "(cached data)";
+        document.getElementById("silver-change").textContent = "(cached data)";
+      } else {
+        document.getElementById("gold-price").textContent = "Error";
+        document.getElementById("silver-price").textContent = "Error";
+      }
     }
   }
 
-  fetchMetalRates();
-  setInterval(fetchMetalRates, 15 * 60 * 1000); // auto refresh every 15 min
+  // Only fetch if last update > 2 days ago
+  const lastUpdate = localStorage.getItem("lastMetalUpdate");
+  const now = Date.now();
+  const twoDays = 2 * 24 * 60 * 60 * 1000; // 2 days in ms
+
+  if (!lastUpdate || now - lastUpdate > twoDays) {
+    fetchMetalRates();
+  } else {
+    // Use saved cached data
+    const savedGold = localStorage.getItem("goldPrice");
+    const savedSilver = localStorage.getItem("silverPrice");
+    if (savedGold && savedSilver) {
+      document.getElementById("gold-price").textContent = "₹" + savedGold;
+      document.getElementById("silver-price").textContent = "₹" + savedSilver;
+      document.getElementById("gold-change").textContent = "(cached data)";
+      document.getElementById("silver-change").textContent = "(cached data)";
+    }
+  }
+
+  // Auto recheck every 48 hours
+  setInterval(fetchMetalRates, 2 * 24 * 60 * 60 * 1000);
 </script>
 
 
@@ -863,4 +898,5 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
