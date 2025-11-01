@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Soni Jewellers</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#d4af37">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: #ffffff;
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .back {
+      position: absolute;
+      top: 25px;
+      left: 20px;
+      font-size: 1.5rem;
+      color: #800000;
+      cursor: pointer;
+    }
+
+    h2 {
+      font-weight: 600;
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+    }
+
+    p {
+      font-size: 0.9rem;
+      color: #777;
+      margin-bottom: 30px;
+    }
+
+    form {
+      width: 100%;
+      max-width: 340px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 30px;
+      border: 1.5px solid #ddd;
+      outline: none;
+      font-size: 0.95rem;
+      transition: 0.3s;
+    }
+
+    input:focus {
+      border-color: #800000;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 30px;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn-primary {
+      background: #800000;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #660000;
+    }
+
+    .signup-link {
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .signup-link a {
+      color: #800000;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .signup-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <i class="ri-arrow-left-line back" onclick="window.history.back()"></i>
+
+  <div>
+    <h2>Welcome Back</h2>
+    <p>Login to continue exploring Soni Jewellers.</p>
+  </div>
+
+  <form id="loginForm">
+    <input type="email" id="email" placeholder="Email Address" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button type="submit" class="btn btn-primary" id="loginBtn">Login</button>
+  </form>
+
+  <div class="signup-link">
+    Don’t have an account? <a href="signup.html">Sign Up</a>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    // Import Firebase libraries
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    // 🔥 Replace this config with your own from Firebase console
+    const firebaseConfig = {
+ apiKey: "AIzaSyBrHOD-qa8nnXBDqMBWtpMQ8wtXII_F-wU",
+      authDomain: "sonijewellersapp-5d80c.firebaseapp.com",
+      projectId: "sonijewellersapp-5d80c",
+      storageBucket: "sonijewellersapp-5d80c.firebasestorage.app",
+      messagingSenderId: "742309830546",
+      appId: "1:742309830546:web:088f71c01bdaa7d7c5eb4b",
+      measurementId: "G-GLQY4H7K8B"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Handle login
+    const form = document.getElementById("loginForm");
+    const loginBtn = document.getElementById("loginBtn");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      loginBtn.disabled = true;
+      loginBtn.innerText = "Logging in...";
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          alert("Login successful!");
+          console.log("✅ Logged in:", user.email);
+          window.location.href = "index.html"; // redirect to your home page
+        })
+        .catch((error) => {
+          console.error(error.code, error.message);
+          alert("Login failed: " + error.message);
+        })
+        .finally(() => {
+          loginBtn.disabled = false;
+          loginBtn.innerText = "Login";
+        });
+    });
+  </script>
+</body>
+</html>

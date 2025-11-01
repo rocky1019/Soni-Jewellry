@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page | Soni Jewellers</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#d4af37">
+
+  <!-- Icons + Fonts -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: #fafafa;
+      color: #222;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: white;
+      color: #222;
+      font-weight: 600;
+      font-size: 1.2rem;
+      text-align: center;
+      padding: 1rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .content {
+      padding: 20px;
+      flex: 1;
+    }
+
+    .content h2 {
+      color: #d4af37;
+      margin-bottom: 10px;
+      font-size: 1.3rem;
+    }
+
+    .content p {
+      line-height: 1.6;
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border-top: 1px solid #ddd;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 8px 0;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+      z-index: 100;
+    }
+
+    .bottom-nav .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #555;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .bottom-nav .nav-item.active,
+    .bottom-nav .nav-item:hover {
+      color: #d4af37;
+    }
+
+    .bottom-nav i {
+      font-size: 1.3rem;
+    }
+header {
+  background: white;
+  color: #222;
+  font-weight: 600;
+  font-size: 1.2rem;
+  text-align: center;
+  padding: 1rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+header .back-btn {
+  position: absolute;
+  left: 15px;
+  font-size: 1.5rem;
+  color: #d4af37;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+header .back-btn:hover {
+  color: #b8912c;
+}
+
+  </style>
+</head>
+
+<body>
+
+ <header id="pageHeader">
+  <i class="ri-arrow-left-line back-btn" onclick="goBack()"></i>
+  <span id="pageTitle">Page</span>
+</header>
+
+
+  <div class="content" id="pageContent">
+    <p>Loading content...</p>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <a href="index.html" class="nav-item"><i class="ri-home-5-line"></i><span>Home</span></a>
+    <a href="search.html" class="nav-item"><i class="ri-search-line"></i><span>Search</span></a>
+    <a href="#" class="nav-item" onclick="openWhatsApp()"><i class="ri-whatsapp-line"></i><span>Chat</span></a>
+    <a href="profile.html" class="nav-item active"><i class="ri-user-line"></i><span>Profile</span></a>
+  </nav>
+
+  <script>
+    const content = document.getElementById("pageContent");
+    const title = document.getElementById("pageTitle");
+    const params = new URLSearchParams(window.location.search);
+    const page = params.get("page") || "default";
+
+    const pages = {
+      orders: {
+        title: "Your Orders",
+        text: "Here you can see your past and current orders. (Coming soon...)"
+      },
+      wishlist: {
+        title: "Wishlist",
+        text: "Your saved favourite jewellery items will appear here."
+      },
+      address: {
+        title: "Saved Addresses",
+        text: "Manage your delivery and billing addresses here."
+      },
+      policy: {
+        title: "Privacy Policy",
+        text: "We respect your privacy. All your personal information is protected and never shared."
+      },
+      terms: {
+        title: "Terms & Conditions",
+        text: "Read the terms and conditions of using Soni Jewellers services. "
+      },
+      contact: {
+        title: "Contact Us",
+        text: "For support or inquiries, call us at +91 8009726406 or email "
+      },
+      about: {
+        title: "About Us",
+        text: "Soni Jewellers brings timeless elegance and craftsmanship together, delivering beautiful gold and diamond jewellery since 1990."
+      },
+      share: {
+        title: "Share App",
+        text: "Share our app with your friends and family! (Feature coming soon.)"
+      },
+      rate: {
+        title: "Rate App",
+        text: "Love our app? Rate us on the Play Store and help others discover Soni Jewellers!"
+      },
+      default: {
+        title: "Page Not Found",
+        text: "Sorry, this page doesn’t exist or is under development."
+      }
+    };
+
+    const current = pages[page] || pages.default;
+    title.textContent = current.title;
+    content.innerHTML = `<h2>${current.title}</h2><p>${current.text}</p>`;
+
+    function openWhatsApp() {
+      window.open("https://wa.me/918009726406", "_blank");
+    }
+    function goBack() {
+  window.history.back();
+}
+
+  </script>
+
+</body>
+</html>

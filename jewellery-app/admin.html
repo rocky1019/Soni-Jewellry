@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin Panel | Soni Jewellers</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#d4af37">
+
+  <style>
+    *{box-sizing:border-box}
+    body{font-family:"Poppins",sans-serif;background:#fffaf2;color:#222;padding:20px;}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;}
+    .back-btn{background:#fff;border:1px solid #ddd;padding:8px 12px;border-radius:8px;cursor:pointer}
+    h1{color:#800000;margin:0;font-size:1.4rem}
+    .admin-panel{max-width:720px;margin:0 auto;background:#fff;padding:20px;border-radius:12px;box-shadow:0 4px 18px rgba(0,0,0,.06)}
+    form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    form .full{grid-column:1/-1}
+    label{font-size:.85rem;color:#444;display:block;margin-bottom:6px}
+    input[type="text"], input[type="number"], textarea, input[type="file"]{
+      width:100%;padding:10px;border:1px solid #e6e6e6;border-radius:8px;outline:none;font-size:.95rem;
+    }
+    textarea{min-height:90px;resize:vertical}
+    .actions{display:flex;gap:10px;align-items:center;margin-top:12px}
+    .btn{padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600}
+    .btn-primary{background:#800000;color:#fff}
+    .btn-ghost{background:#fff;border:1px solid #ddd}
+    .msg{margin-top:12px;font-size:0.95rem}
+    .hidden{display:none}
+    .loader{margin-left:8px;display:inline-block}
+    .preview{margin-top:12px;display:flex;gap:12px;flex-wrap:wrap}
+    .preview img{width:120px;height:120px;object-fit:cover;border-radius:8px;border:1px solid #eee}
+    @media(max-width:720px){ form{grid-template-columns:1fr} .preview img{width:100px;height:100px} }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Admin — Add Product</h1>
+    <button class="back-btn" onclick="window.history.back()">← Back</button>
+  </header>
+
+  <section class="admin-panel" id="panel">
+    <div id="statusMsg" class="msg">Checking admin access...</div>
+
+    <form id="addProductForm" class="hidden" enctype="multipart/form-data">
+      <div>
+        <label>Product Name</label>
+        <input id="p_name" type="text" placeholder="e.g. Gold Necklace" required>
+      </div>
+
+      <div>
+        <label>Grams</label>
+        <input id="p_gram" type="text" placeholder="e.g. 8.26" required>
+      </div>
+
+      <div>
+        <label>Price (₹)</label>
+        <input id="p_price" type="text" placeholder="e.g. 34999" required>
+      </div>
+
+      <div>
+        <label>Image (jpg / png)</label>
+        <input id="p_image" type="file" accept="image/*" required>
+      </div>
+
+      <div class="full">
+        <label>Description (optional)</label>
+        <textarea id="p_desc" placeholder="Short product description (optional)"></textarea>
+      </div>
+
+      <div class="full actions">
+        <button type="button" class="btn btn-primary" id="submitBtn">Add Product</button>
+        <button type="reset" class="btn btn-ghost" id="resetBtn">Reset</button>
+        <div id="loading" class="loader hidden">Uploading...</div>
+      </div>
+
+      <div class="full preview" id="previewWrap"></div>
+    </form>
+  </section>
+<div id="adminPasswordPrompt" style="
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100vh;gap:14px;text-align:center;
+">
+  <h2 style="color:#800000;">🔒 Admin Access</h2>
+  <p style="color:#444;font-size:0.9rem;">Enter admin panel password to continue</p>
+  <input id="adminPassInput" type="password" placeholder="Enter password" 
+         style="padding:10px 12px;border:1px solid #ddd;border-radius:8px;width:220px;">
+  <button id="adminPassBtn" style="padding:10px 18px;border:none;background:#800000;color:white;
+          border-radius:8px;cursor:pointer;">Unlock</button>
+  <div id="adminPassError" style="color:red;font-size:0.85rem;"></div>
+</div>
+
+  <!-- libs -->
+  <script type="module">
+    // --- Admin password protection ---
+const ADMIN_PASSWORD = "soniadmin123"; // <--- change this to your real password
+
+const passPrompt = document.getElementById('adminPasswordPrompt');
+const passInput = document.getElementById('adminPassInput');
+const passBtn = document.getElementById('adminPassBtn');
+const passError = document.getElementById('adminPassError');
+const panel = document.getElementById('panel');
+
+// Check if already unlocked in localStorage
+if (localStorage.getItem("adminUnlocked") === "true") {
+  passPrompt.style.display = "none";
+  panel.style.display = "block";
+} else {
+  panel.style.display = "none";
+}
+
+// On click verify
+passBtn.addEventListener("click", () => {
+  const entered = passInput.value.trim();
+  if (entered === ADMIN_PASSWORD) {
+    localStorage.setItem("adminUnlocked", "true");
+    passPrompt.style.display = "none";
+    panel.style.display = "block";
+  } else {
+    passError.textContent = "Incorrect password. Try again.";
+  }
+});
+
+  // Firebase imports
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
+  // Supabase import (ESM bundle)
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+  // --- CONFIG (use your values) ---
+  const firebaseConfig = {
+    apiKey: "AIzaSyBrHOD-qa8nnXBDqMBWtpMQ8wtXII_F-wU",
+    authDomain: "sonijewellersapp-5d80c.firebaseapp.com",
+    projectId: "sonijewellersapp-5d80c",
+    storageBucket: "sonijewellersapp-5d80c.firebasestorage.app",
+    messagingSenderId: "742309830546",
+    appId: "1:742309830546:web:088f71c01bdaa7d7c5eb4b",
+    measurementId: "G-GLQY4H7K8B"
+  };
+
+  // Supabase config (your supplied values)
+  const SUPABASE_URL = "https://mcyidvzglsbniecfkuzu.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jeWlkdnpnbHNibmllY2ZrdXp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE4NTU4MjgsImV4cCI6MjA3NzQzMTgyOH0.IcUtd_P4GCo1-oQAGlAEkmy7IixGozqYlxhbZjSGwhs";
+
+  // Initialize services
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // DOM
+  const statusMsg = document.getElementById('statusMsg');
+  const form = document.getElementById('addProductForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const loading = document.getElementById('loading');
+  const previewWrap = document.getElementById('previewWrap');
+
+  // Admin emails (lowercase)
+  const adminEmails = [
+    "jewellerysoni3@gmail.com",
+    "atharvaaghav6@gmail.com"
+  ];
+
+  // Helper to show/hide
+  const show = el => el.classList.remove('hidden');
+  const hide = el => el.classList.add('hidden');
+
+  // preview image when chosen
+  document.getElementById('p_image').addEventListener('change', (e)=>{
+    previewWrap.innerHTML = "";
+    const f = e.target.files[0];
+    if(!f) return;
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(f);
+    previewWrap.appendChild(img);
+  });
+
+  // check admin login
+  onAuthStateChanged(auth, (user) => {
+    if(user && user.email && adminEmails.includes(user.email.toLowerCase())) {
+      statusMsg.textContent = `Welcome admin — ${user.email}`;
+      show(form);
+      hide(statusMsg); // hide the status message area
+    } else if (user) {
+      // logged in but not admin
+      statusMsg.textContent = "Access denied — admins only.";
+      hide(form);
+    } else {
+      // not logged in at all
+      statusMsg.textContent = "Not signed in — redirecting to login...";
+      hide(form);
+      setTimeout(()=> window.location.href = "login.html", 800);
+    }
+  });
+
+  // Form submit flow
+  submitBtn.addEventListener('click', async () => {
+    const name = document.getElementById('p_name').value.trim();
+    const gram = document.getElementById('p_gram').value.trim();
+    const price = document.getElementById('p_price').value.trim();
+    const desc = document.getElementById('p_desc').value.trim();
+    const fileEl = document.getElementById('p_image');
+    const file = fileEl.files[0];
+
+    if(!name || !gram || !price || !file) {
+      alert('Please fill name, gram, price and choose an image.');
+      return;
+    }
+
+    try {
+      show(loading);
+      submitBtn.disabled = true;
+
+      // create a unique filename: timestamp + original name
+      const timestamp = Date.now();
+      const ext = file.name.split('.').pop();
+      const cleanName = name.replace(/\s+/g,'-').toLowerCase().replace(/[^a-z0-9\-]/g,'');
+      const filename = `${cleanName}-${timestamp}.${ext}`;
+      const bucket = 'products'; // your bucket
+
+      // upload to supabase
+      const { data, error: uploadErr } = await supabase.storage
+        .from(bucket)
+        .upload(filename, file, { upsert: false });
+
+      if (uploadErr) {
+        console.error('Supabase upload error', uploadErr);
+        throw uploadErr;
+      }
+
+      // build public URL
+      const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${encodeURIComponent(filename)}`;
+
+      // store product doc in Firestore
+      const docRef = await addDoc(collection(db, 'products'), {
+        name,
+        gram,
+        price,
+        description: desc || '',
+        imageUrl: publicUrl,
+        timestamp: serverTimestamp()
+      });
+
+      hide(loading);
+      submitBtn.disabled = false;
+      alert('Product added successfully ✅');
+      form.reset();
+      previewWrap.innerHTML = "";
+
+    } catch (err) {
+      console.error('Add product error', err);
+      hide(loading);
+      submitBtn.disabled = false;
+      alert('Could not add product. See console for details.');
+    }
+  });
+
+  </script>
+</body>
+</html>

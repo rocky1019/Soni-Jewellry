@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search | Soni Jewellers</title>
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#d4af37">
+
+
+  <!-- Remix Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --gold: #d4af37;
+      --bg: #fffaf2;
+      --maroon: #8B0000;
+      --gray: #777;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #fff;
+      color: #111;
+      padding-bottom: 70px; /* space for bottom nav */
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 20px;
+    }
+
+    /* Search bar */
+    .search-box {
+      margin: 0 20px 10px;
+      display: flex;
+      align-items: center;
+      background: #f3f4f6;
+      border-radius: 12px;
+      padding: 10px 14px;
+      border: 1px solid #d0d0d0;
+    }
+    .search-box i {
+      font-size: 18px;
+      color: var(--gray);
+      margin-right: 8px;
+    }
+    .search-box input {
+      border: none;
+      outline: none;
+      background: none;
+      flex: 1;
+      font-size: 15px;
+    }
+
+    /* Tags */
+    .tags-container {
+      margin: 0 20px;
+    }
+    .tags-grid {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      padding-bottom: 20px;
+    }
+    .tag-item {
+      flex-shrink: 0;
+      text-align: center;
+    }
+    .tag-item img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 6px;
+    }
+    .tag-item span {
+      font-size: 13px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    /* Bottom nav */
+    .bottom-nav {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      background: #fff;
+      border-top: 1px solid #eee;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 8px 6px;
+      z-index: 60;
+      box-shadow: 0 -6px 18px rgba(0,0,0,0.06);
+    }
+    .bottom-nav .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: #666;
+      text-decoration: none;
+    }
+    .bottom-nav .nav-item .icon {
+      font-size: 20px;
+    }
+    .bottom-nav .nav-item.active {
+      color: var(--maroon);
+    }
+    .bottom-nav .nav-item.active .icon {
+      color: var(--maroon);
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Search</h2>
+
+  <div class="search-box">
+    <i class="ri-search-line"></i>
+    <input type="text" placeholder="Search jewellery...">
+  </div>
+
+  <div class="tags-container">
+    <h2>Tags</h2>
+    <div class="tags-grid">
+      <div class="tag-item">
+        <img src="assets/images/chain.png" alt="">
+        <span>Chain</span>
+      
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav" role="navigation">
+    <a href="index.html" class="nav-item" data-tab="home">
+      <i class="icon ri-home-5-line"></i>
+      <span>Home</span>
+    </a>
+
+    <a href="search.html" class="nav-item" data-tab="search">
+      <i class="icon ri-search-line"></i>
+      <span>Search</span>
+    </a>
+
+    <a href="#" class="nav-item" data-tab="chat" onclick="openWhatsApp(event)">
+      <i class="icon ri-whatsapp-line"></i>
+      <span>Chat</span>
+    </a>
+
+    <a href="profile.html" class="nav-item" data-tab="profile">
+      <i class="icon ri-user-line"></i>
+      <span>Profile</span>
+    </a>
+  </nav>
+
+  <script>
+    // WhatsApp link
+    function openWhatsApp(event){
+      event.preventDefault();
+      window.open("https://wa.me/918009726406","_blank");
+    }
+
+    // Keep active tab highlighted
+    const currentPage = window.location.pathname.split("/").pop();
+    document.querySelectorAll(".bottom-nav .nav-item").forEach(item=>{
+      const href = item.getAttribute("href");
+      if (href === currentPage) item.classList.add("active");
+    });
+  </script>
+
+</body>
+</html>

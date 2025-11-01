@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Soni Jewellers — Home</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#d4af37">
+
+
+  <style>
+    :root{
+      --maroon:#5a0c0c;
+      --gold:#d4af37;
+      --bg:#fffaf2;
+      --muted:#666;
+      --card:#ffffff;
+      --soft-shadow: 0 6px 18px rgba(16,16,16,0.06);
+      --radius:14px;
+      --gap:16px;
+      --glass: rgba(255,255,255,0.75);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background:var(--bg);
+      color:#111;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* ===== Top Navbar ===== */
+    .topbar{
+      background:var(--maroon);
+      color:#fff;
+      padding: 12px 14px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      position:sticky;
+      top:0;
+      z-index:50;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .hamburger{
+      font-size:22px;
+      cursor:pointer;
+      width:36px;
+      height:36px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex:1;
+    }
+    .brand img.logo{
+      width:36px;
+      height:36px;
+      border-radius:50%;
+      object-fit:cover;
+      background:#fff;
+      padding:2px;
+    }
+    .brand .title{
+      font-weight:600;
+      font-size:1.05rem;
+      color:#fff;
+      white-space:nowrap;
+    }
+    .top-icons{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .top-icons i{font-size:20px; cursor:pointer; color:#fff;}
+    .top-icons i:hover{color:var(--gold)}
+
+    /* ===== Sidebar (drawer) ===== */
+    .drawer{
+      position:fixed;
+      top:0;
+      left: -320px;
+      width:320px;
+      height:100%;
+      background:#fff;
+      box-shadow: 8px 0 30px rgba(0,0,0,0.15);
+      z-index:80;
+      transition: left .28s cubic-bezier(.2,.9,.3,1);
+      overflow:auto;
+      padding:18px;
+      border-top-right-radius:16px;
+      border-bottom-right-radius:16px;
+    }
+    .drawer.open{ left:0 }
+    .drawer .profile{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:8px;
+      padding-bottom:12px;
+      border-bottom:1px solid #f2f2f2;
+    }
+    .drawer .profile .avatar{
+      width:56px; height:56px; border-radius:50%; background:linear-gradient(180deg,#ffdca1,#ffd47a);
+      display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--maroon);
+    }
+    .drawer h3{ margin:0 0 8px 0; font-size:1.05rem; color:var(--maroon) }
+    .drawer p{ margin:0; color:var(--muted); font-size:.95rem}
+    .drawer .cat-list{ margin-top:18px; }
+    .drawer .cat-list .cat{
+      display:flex; align-items:center; gap:12px; padding:10px 6px; border-radius:10px; cursor:pointer;
+    }
+    .drawer .cat-list .cat:hover{background:#fafafa}
+    .drawer .cat-list img{ width:44px; height:44px; border-radius:8px; object-fit:cover; }
+
+    /* ===== Main Content Area ===== */
+    .container{ padding: 14px; padding-bottom: 120px; /* leave room for bottom nav */ max-width:1100px; margin:0 auto }
+
+    /* Category icons row */
+    .category-row{
+      display:flex;
+      gap:14px;
+      overflow-x:auto;
+      padding:6px 2px;
+      margin-bottom:12px;
+    }
+    .cat-pill{
+      min-width:78px;
+      flex:0 0 auto;
+      text-align:center;
+      background:transparent;
+    }
+    .cat-pill .img{
+      width:64px; height:64px; border-radius:14px; object-fit:cover; margin:0 auto; box-shadow:var(--soft-shadow); overflow:hidden;
+    }
+    .cat-pill p{ margin-top:8px; font-size:0.9rem; color:#111 }
+
+    /* Banner / Carousel */
+    .banner{
+      position:relative;
+      border-radius:14px;
+      overflow:hidden;
+      margin-bottom:18px;
+      background:#fff;
+      box-shadow: var(--soft-shadow);
+    }
+    .banner img{ width:100%; height:190px; object-fit:cover; display:block }
+    .dots{ display:flex; gap:8px; justify-content:center; padding:10px 0; }
+    .dot{ width:8px; height:8px; border-radius:50%; background:#ddd }
+    .dot.active{ background:var(--maroon) }
+
+    /* Metal Price */
+    .metal-row{ display:flex; gap:12px; margin:8px 0 18px; flex-wrap:wrap }
+    .metal-card{
+      background:#f4f3fb;
+      padding:16px;
+      border-radius:14px;
+      min-width:210px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.04);
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .metal-card h4{ margin:0; color:var(--maroon) }
+    .metal-card .price{ font-weight:700; color:var(--maroon); font-size:1.05rem }
+
+    /* Feature boxes */
+    .feature-row{ display:flex; gap:12px; margin:12px 0 18px; flex-wrap:wrap }
+    .feature{
+      flex:1 1 220px;
+      padding:16px;
+      border-radius:14px;
+      background:#fff;
+      box-shadow: var(--soft-shadow);
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+      min-height:96px;
+    }
+    .feature.light{ background: #eaf8ff }
+    .feature.pink{ background: #fdeef7 }
+
+    .feature h4{ margin:0; font-size:1rem; color:#111 }
+    .feature p{ margin:0; color:var(--muted); font-size:.9rem }
+
+    /* Section headings */
+    .section-head{ display:flex; align-items:center; justify-content:space-between; margin:8px 0; }
+    .section-head h3{ margin:0; font-size:1.05rem }
+    .see-more{ background:var(--maroon); color:#fff; width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer }
+
+    /* Horizontal product carousel */
+    .prod-row{ display:flex; gap:14px; overflow-x:auto; padding-bottom:8px; }
+    .prod-card{
+      flex:0 0 210px;
+      background:#fff;
+      border-radius:12px;
+      padding:10px;
+      box-shadow: var(--soft-shadow);
+      min-height:260px;
+    }
+    .prod-card img{ width:100%; height:150px; object-fit:cover; border-radius:8px }
+    .prod-card .meta{ padding-top:8px }
+    .prod-card .meta small{ color:var(--muted); display:block; margin-bottom:6px }
+    .prod-card .meta .g{ font-weight:600; color:#111 }
+
+    /* small arrows for desktop */
+    .carousel-controls{ display:none; gap:8px; align-items:center }
+    @media(min-width:900px){
+      .carousel-controls{ display:flex }
+    }
+
+    /* Bottom nav */
+    .bottom-nav{
+      position:fixed;
+      left:0; right:0; bottom:0;
+      background:#fff;
+      border-top: 1px solid #eee;
+      display:flex;
+      justify-content:space-around;
+      align-items:center;
+      padding:8px 6px;
+      z-index:60;
+      box-shadow: 0 -6px 18px rgba(0,0,0,0.06);
+    }
+    .bottom-nav .nav-item{ display:flex; flex-direction:column; align-items:center; gap:4px; font-size:12px; color:#666; text-decoration:none }
+    .bottom-nav .nav-item .icon{ font-size:20px }
+    .bottom-nav .nav-item.active{ color:var(--maroon); }
+    .bottom-nav .nav-item.active .icon{ color:var(--maroon) }
+
+    /* small touches */
+    h1,h2,h3,h4{ font-weight:600 }
+    .muted{ color:var(--muted) }
+
+    /* responsive tweaks */
+    @media(max-width:520px){
+      .banner img{ height:150px }
+      .prod-card{ flex:0 0 170px }
+      .metal-card{ min-width:160px }
+      .drawer{ width:86%; left:-86% }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAV -->
+  <header class="topbar">
+    <div class="hamburger" id="menuBtn"><i class="ri-menu-3-line" style="color:#fff;font-size:22px"></i></div>
+    <div class="brand">
+      <img class="logo" src="assets/images/IMG-20251030-WA0017.jpg" alt="Soni Logo" onerror="this.src='https://via.placeholder.com/80x80/ffffff/000?text=S'">
+      <div class="title">Soni Jewellers</div>
+    </div>
+    <div class="top-icons">
+      <i class="ri-heart-line" title="Wishlist"></i>
+      <i class="ri-shopping-bag-line" title="Orders"></i>
+      <i class="ri-shopping-cart-line" title="Cart"></i>
+    </div>
+  </header>
+
+  <!-- SIDEBAR DRAWER -->
+  <aside class="drawer" id="drawer">
+    <div class="profile">
+      <div class="avatar">SJ</div>
+      <div>
+        <h3>Welcome</h3>
+        <p class="muted">Sign in to access wishlist & orders</p>
+      </div>
+    </div>
+
+    <div class="cat-list">
+      <h4>Categories & Sub Categories</h4>
+
+      <div class="cat" onclick="toggleCat(this)">
+        <img src="assets/images/Gold-Jewellery-PNG-Images.png" alt="">
+        <div>
+          <div style="font-weight:600">Gold Jewellery</div>
+          <small class="muted">View subcategories</small>
+        </div>
+        <div style="margin-left:auto;color:var(--muted)">+</div>
+      </div>
+
+      <div class="cat" onclick="toggleCat(this)">
+        <img src="assets/images/Empty-Gold-Coin-Transparent.png" alt="">
+        <div>
+          <div style="font-weight:600">Gold Coins</div>
+          <small class="muted">Coins & bars</small>
+        </div>
+        <div style="margin-left:auto;color:var(--muted)">+</div>
+      </div>
+
+      <div class="cat" onclick="toggleCat(this)">
+        <img src="assets/images/3028714-High-jewellery-diamond-necklace.jpg" alt="">
+        <div>
+          <div style="font-weight:600">Silver Jewellery</div>
+          <small class="muted">Rings, Chains</small>
+        </div>
+        <div style="margin-left:auto;color:var(--muted)">+</div>
+      </div>
+
+      <div style="height:40px"></div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="container">
+
+    <!-- categories row -->
+    <div class="category-row" aria-hidden="false">
+      <div class="cat-pill">
+        <div class="img" style="background:#fff"><img src="assets/images/bagles.png" style="width:100%;height:100%;object-fit:cover;border-radius:12px" alt=""></div>
+        <p>Bangles</p>
+      </div>
+
+      <div class="cat-pill">
+        <div class="img" style="background:#fff"><img src="assets/images/earring.png" style="width:100%;height:100%;object-fit:cover;border-radius:12px" alt=""></div>
+        <p>Earrings</p>
+      </div>
+
+      <div class="cat-pill">
+        <div class="img" style="background:#fff"><img src="assets/images/chain.png" style="width:100%;height:100%;object-fit:cover;border-radius:12px" alt=""></div>
+        <p>Chain</p>
+      </div>
+
+      <div class="cat-pill">
+        <div class="img" style="background:#f3f0ff"><img src="assets/images/more.png" style="width:100%;height:100%;object-fit:cover;border-radius:12px" alt=""></div>
+        <p>More</p>
+      </div>
+    </div>
+
+<!-- banner -->
+<div class="banner" id="banner">
+  <img src="assets/images/banner2.png" alt="banner" id="bannerImg">
+</div>
+
+
+<!-- metal price -->
+<div class="metal-row">
+  <div class="metal-card" id="gold-card">
+    <h4>Gold</h4>
+    <div style="font-size:.9rem;color:var(--muted)">24K (per gram)</div>
+    <div class="price" id="gold-price">₹—</div>
+    <div class="muted" id="gold-change">Loading...</div>
+    <small class="muted" id="gold-updated">Updating...</small>
+  </div>
+
+  <div class="metal-card" style="background:#fff7e6" id="silver-card">
+    <h4>Silver</h4>
+    <div style="font-size:.9rem;color:var(--muted)">999 (per gram)</div>
+    <div class="price" id="silver-price">₹—</div>
+    <div class="muted" id="silver-change">Loading...</div>
+    <small class="muted" id="silver-updated">Updating...</small>
+  </div>
+</div>
+
+<script>
+  async function fetchMetalRates() {
+    try {
+      // --- Fetch GOLD ---
+      const goldRes = await fetch("https://www.goldapi.io/api/XAU/INR", {
+        headers: {
+          "x-access-token": "goldapi-4pborsmhfwszkn-io",
+          "Content-Type": "application/json"
+        }
+      });
+      if (!goldRes.ok) throw new Error("Gold fetch failed");
+      const goldData = await goldRes.json();
+
+      // --- Fetch SILVER ---
+      const silverRes = await fetch("https://www.goldapi.io/api/XAG/INR", {
+        headers: {
+          "x-access-token": "goldapi-4pborsmhfwszkn-io",
+          "Content-Type": "application/json"
+        }
+      });
+      if (!silverRes.ok) throw new Error("Silver fetch failed");
+      const silverData = await silverRes.json();
+
+      // --- Convert from per troy ounce to per gram ---
+      const ozToGram = 31.1035;
+      const goldPerGram = goldData.price / ozToGram;
+      const silverPerGram = silverData.price / ozToGram;
+
+      // --- Update UI ---
+      document.getElementById("gold-price").textContent = "₹" + goldPerGram.toFixed(2);
+      document.getElementById("silver-price").textContent = "₹" + silverPerGram.toFixed(2);
+
+      const time = new Date().toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
+      document.getElementById("gold-updated").textContent = "Updated on " + time;
+      document.getElementById("silver-updated").textContent = "Updated on " + time;
+
+      document.getElementById("gold-change").textContent = "+ 3% GST applicable";
+      document.getElementById("silver-change").textContent = "per gram";
+
+    } catch (err) {
+      console.error("Failed to fetch metal rates:", err);
+      document.getElementById("gold-price").textContent = "Error";
+      document.getElementById("silver-price").textContent = "Error";
+    }
+  }
+
+  fetchMetalRates();
+  setInterval(fetchMetalRates, 15 * 60 * 1000); // auto refresh every 15 min
+</script>
+
+
+
+
+    <!-- features -->
+<div class="feature light" id="installment-feature">
+  <div>
+    <h4>Installment Plan</h4>
+    <p>Join monthly installment plans</p>
+  </div>
+  <div style="font-size:28px;color:var(--maroon)">₹</div>
+</div>
+
+
+      <div class="feature pink">
+        <div>
+          <h4>Custom Orders</h4>
+          <p>Easily manage your custom orders</p>
+        </div>
+        <div style="font-size:28px;color:var(--maroon)">⚙️</div>
+      </div>
+    </div>
+
+    <!-- Top Trending -->
+    <div class="section-head">
+      <h3>Top Trending</h3>
+      <div class="carousel-controls">
+        <button class="see-more" onclick="scrollLeft('.top-trending')"><i class="ri-arrow-left-s-line" style="font-size:20px;color:#fff"></i></button>
+        <button class="see-more" onclick="scrollRight('.top-trending')"><i class="ri-arrow-right-s-line" style="font-size:20px;color:#fff"></i></button>
+      </div>
+    </div>
+
+    <div class="prod-row top-trending">
+      <!-- product example card -->
+      <div class="prod-card">
+        <img src="assets/images/placeholder.jpg" alt="">
+        <div class="meta">
+          <small>GMS 2396</small>
+          <div class="g">29.060 Grams - 22K (916)</div>
+        </div>
+      </div>
+
+      <div class="prod-card">
+        <img src="assets/images/placeholder.jpg" alt="">
+        <div class="meta">
+          <small>Ghr 1630</small>
+          <div class="g">7.900 Grams - 22K (916)</div>
+        </div>
+      </div>
+
+      <div class="prod-card">
+        <img src="assets/images/placeholder.jpg" alt="">
+        <div class="meta">
+          <small>Gag 111</small>
+          <div class="g">3.060 Grams - 22K (916)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- New Arrival -->
+    <div class="section-head" style="margin-top:18px">
+      <h3>New Arrival</h3>
+      <div class="carousel-controls">
+        <button class="see-more" onclick="scrollLeft('.new-arrival')"><i class="ri-arrow-left-s-line" style="font-size:20px;color:#fff"></i></button>
+        <button class="see-more" onclick="scrollRight('.new-arrival')"><i class="ri-arrow-right-s-line" style="font-size:20px;color:#fff"></i></button>
+      </div>
+    </div>
+
+    <div class="prod-row new-arrival">
+      <div class="prod-card">
+        <img src="assets/images/placeholder.jpg" alt="">
+        <div class="meta">
+          <small>GBR 648</small>
+          <div class="g">8.260 Grams - 22K (916)</div>
+        </div>
+      </div>
+
+      <div class="prod-card">
+        <img src="assets/images/placeholder.jpg" alt="">
+        <div class="meta">
+          <small>GBR 647</small>
+          <div class="g">8.220 Grams - 22K (916)</div>
+        </div>
+      </div>
+
+      <div class="prod-card">
+        <img src="assets/images/placeholder.jpg" alt="">
+        <div class="meta">
+          <small>NEW 301</small>
+          <div class="g">6.540 Grams - 22K (916)</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- CART ALERT PLACEHOLDER (optional) -->
+  <div id="cartPopup" style="display:none;position:fixed;bottom:90px;right:18px;background:var(--gold);color:#fff;padding:12px 16px;border-radius:10px;z-index:90;box-shadow:0 8px 20px rgba(0,0,0,0.12)">
+    You don't have anything in your cart yet.
+  </div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav" role="navigation">
+  <a href="index.html" class="nav-item" data-tab="home">
+    <i class="icon ri-home-5-line"></i>
+    <span>Home</span>
+  </a>
+
+  <a href="search.html" class="nav-item" data-tab="search">
+    <i class="icon ri-search-line"></i>
+    <span>Search</span>
+  </a>
+
+  <a href="#" class="nav-item" data-tab="chat" onclick="openWhatsApp(event)">
+    <i class="icon ri-whatsapp-line"></i>
+    <span>Chat</span>
+  </a>
+
+  <a href="profile.html" class="nav-item" data-tab="profile">
+    <i class="icon ri-user-line"></i>
+    <span>Profile</span>
+  </a>
+</nav>
+
+<script>
+  // Function to open WhatsApp with demo number
+  function openWhatsApp(event) {
+    event.preventDefault();
+    window.open("https://wa.me/918009726406", "_blank"); // demo number
+  }
+
+  // Highlight active tab
+  function activateTab(event) {
+    // ✅ Do NOT prevent default navigation here
+    document.querySelectorAll(".bottom-nav .nav-item").forEach(item => {
+      item.classList.remove("active");
+    });
+    event.currentTarget.classList.add("active");
+  }
+
+  // Keep active tab highlighted on page load
+  const currentPage = window.location.pathname.split("/").pop();
+  document.querySelectorAll(".bottom-nav .nav-item").forEach(item => {
+    const href = item.getAttribute("href");
+    if (href === currentPage) item.classList.add("active");
+  });
+</script>
+
+
+  <script>
+    // Drawer toggle
+    const menuBtn = document.getElementById('menuBtn');
+    const drawer = document.getElementById('drawer');
+    menuBtn.addEventListener('click', () => {
+      drawer.classList.toggle('open');
+    });
+
+    // Close drawer when clicking outside on wide screens
+    window.addEventListener('click', (e) => {
+      if (!drawer.contains(e.target) && !menuBtn.contains(e.target)) {
+        drawer.classList.remove('open');
+      }
+    });
+
+    
+
+    // Bottom nav interactions
+    function activateTab(e){
+      e.preventDefault();
+      document.querySelectorAll('.bottom-nav .nav-item').forEach(i=>i.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+      // placeholder: we keep home content for now
+    }
+
+    // WhatsApp chat (placeholder number)
+    function openWhatsApp(e){
+      e.preventDefault();
+      // placeholder number: update later
+      const number = '918009726406';
+      const text = encodeURIComponent("Hello! I'm contacting from Soni Jewellers website.");
+      window.open(`https://wa.me/${number}?text=${text}`, "_blank");
+    }
+
+    // Cart icon popup (topbar cart)
+    document.querySelectorAll('.ri-shopping-cart-line, .ri-shopping-cart-2-line').forEach(icon=>{
+      icon.addEventListener('click', ()=>{
+        const p = document.getElementById('cartPopup');
+        p.style.display='block';
+        setTimeout(()=>p.style.display='none', 3000);
+      });
+    });
+
+    // Drawer category toggle (example)
+    function toggleCat(el){
+      // this is a simple toggle demo; you can replace with real subcategory rendering
+      if(el.classList.contains('expanded')){
+        el.classList.remove('expanded');
+        el.querySelector('div:last-child').textContent = '+';
+      } else {
+        el.classList.add('expanded');
+        el.querySelector('div:last-child').textContent = '-';
+      }
+    }
+
+    // Prevent drawer closing while interacting on mobile (optional)
+    drawer.addEventListener('click', e => e.stopPropagation());
+  </script>
+<script>
+  // Check if user opened app before
+  if (!localStorage.getItem("hasVisited")) {
+    // Set flag so next time they won't get redirected again
+    localStorage.setItem("hasVisited", "true");
+    // Redirect to onboarding page
+    window.location.href = "onboarding.html";
+  }
+</script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+  import { getFirestore, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
+  // Firebase config (same as your project)
+  const firebaseConfig = {
+    apiKey: "AIzaSyBrHOD-qa8nnXBDqMBWtpMQ8wtXII_F-wU",
+    authDomain: "sonijewellersapp-5d80c.firebaseapp.com",
+    projectId: "sonijewellersapp-5d80c",
+    storageBucket: "sonijewellersapp-5d80c.firebasestorage.app",
+    messagingSenderId: "742309830546",
+    appId: "1:742309830546:web:088f71c01bdaa7d7c5eb4b",
+    measurementId: "G-GLQY4H7K8B"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const newArrivalContainer = document.querySelector('.prod-row.new-arrival');
+
+  // modal elements (create modal programmatically)
+  const modal = document.createElement('div');
+  modal.className = 'product-modal';
+  modal.style.position = 'fixed';
+  modal.style.left = '0';
+  modal.style.top = '0';
+  modal.style.width = '100%';
+  modal.style.height = '100%';
+  modal.style.display = 'none';
+  modal.style.justifyContent = 'center';
+  modal.style.alignItems = 'center';
+  modal.style.background = 'rgba(0,0,0,0.5)';
+  modal.style.zIndex = '9999';
+  modal.innerHTML = `
+    <div style="background:#fff;max-width:420px;width:92%;border-radius:12px;padding:18px;box-shadow:0 8px 30px rgba(0,0,0,0.2);">
+      <button id="modalClose" style="float:right;background:none;border:none;font-size:20px;cursor:pointer">✕</button>
+      <img id="modalImg" src="" style="width:100%;height:220px;object-fit:cover;border-radius:8px;margin-top:6px" />
+      <h3 id="modalName" style="margin:10px 0 6px;color:#111"></h3>
+      <div style="color:#666;margin-bottom:6px;"><strong>Grams:</strong> <span id="modalGram"></span></div>
+      <div style="color:#666;margin-bottom:10px;"><strong>Price:</strong> <span id="modalPrice" style="color:#800000;font-weight:700"></span></div>
+      <p id="modalDesc" style="color:#444;margin-bottom:12px"></p>
+      <div style="display:flex;gap:8px">
+        <button id="modalBuy" style="flex:1;padding:10px;border-radius:10px;border:none;background:#d4af37;font-weight:700;cursor:pointer">Buy Now</button>
+        <button id="modalClose2" style="flex:1;padding:10px;border-radius:10px;border:1px solid #ddd;background:#fff;cursor:pointer">Close</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  const modalImg = modal.querySelector('#modalImg');
+  const modalName = modal.querySelector('#modalName');
+  const modalGram = modal.querySelector('#modalGram');
+  const modalPrice = modal.querySelector('#modalPrice');
+  const modalDesc = modal.querySelector('#modalDesc');
+  const modalBuy = modal.querySelector('#modalBuy');
+  const modalClose = modal.querySelector('#modalClose');
+  const modalClose2 = modal.querySelector('#modalClose2');
+
+  modalClose.addEventListener('click', ()=> modal.style.display='none');
+  modalClose2.addEventListener('click', ()=> modal.style.display='none');
+  modal.addEventListener('click', (e)=> { if (e.target === modal) modal.style.display='none'; });
+
+  async function loadNewArrivals(limitCount = 6) {
+    try {
+      const q = query(collection(db, 'products'), orderBy('timestamp', 'desc'), limit(limitCount));
+      const snap = await getDocs(q);
+
+      newArrivalContainer.innerHTML = ''; // clear existing
+
+      snap.forEach(doc => {
+        const data = doc.data();
+        const card = document.createElement('div');
+        card.className = 'prod-card';
+        card.style.minHeight = '260px';
+        card.innerHTML = `
+          <img src="${data.imageUrl || 'assets/images/placeholder.jpg'}" alt="${escapeHtml(data.name)}" />
+          <div class="meta">
+            <small>${escapeHtml(data.name)}</small>
+            <div class="g">${escapeHtml(data.gram)} Grams</div>
+            <div style="margin-top:6px;color:#800000;font-weight:700">${escapeHtml(data.price)}</div>
+            <div style="margin-top:10px;text-align:center">
+  <button class="view-btn"
+    style="padding:10px 16px;
+           border-radius:30px;
+           border:none;
+           background:linear-gradient(135deg,#d4af37,#b8901c);
+           color:#fff;
+           font-weight:600;
+           letter-spacing:0.3px;
+           cursor:pointer;
+           transition:all 0.3s ease;
+           box-shadow:0 3px 10px rgba(0,0,0,0.15)">
+    View Details
+  </button>
+</div>
+
+          </div>
+        `;
+        // attach click for view details
+        const viewBtn = card.querySelector('.view-btn');
+        viewBtn.addEventListener('click', () => {
+          modalImg.src = data.imageUrl || 'assets/images/placeholder.jpg';
+          modalName.textContent = data.name;
+          modalGram.textContent = data.gram;
+          modalPrice.textContent = data.price;
+          modalDesc.textContent = data.description || '';
+          // prepare buy now
+          modalBuy.onclick = () => {
+            const waNumber = '918009726406'; // demo number - update as needed
+            const message = `Hello! I'm interested in the product: ${data.name} (${data.gram}g) - ${data.price}`;
+            const url = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+          };
+          modal.style.display = 'flex';
+        });
+
+        newArrivalContainer.appendChild(card);
+      });
+
+      // if no products
+      if (snap.size === 0) {
+        newArrivalContainer.innerHTML = '<div style="padding:18px;color:#666">No new arrivals yet.</div>';
+      }
+
+    } catch (err) {
+      console.error('Error loading new arrival products', err);
+      newArrivalContainer.innerHTML = '<div style="padding:18px;color:#666">Could not load products.</div>';
+    }
+  }
+
+  // small helper for XSS-safe simple text
+  function escapeHtml(str='') {
+    return String(str)
+      .replaceAll('&','&amp;')
+      .replaceAll('<','&lt;')
+      .replaceAll('>','&gt;')
+      .replaceAll('"','&quot;')
+      .replaceAll("'",'&#039;');
+  }
+
+  // initial load
+  loadNewArrivals(6);
+  // Wishlist popup for heart icon
+const heartIcon = document.querySelector('.ri-heart-line');
+if (heartIcon) {
+  heartIcon.addEventListener('click', () => {
+    const popup = document.createElement('div');
+    popup.textContent = "You haven’t wishlisted anything yet 💛";
+    popup.style.position = "fixed";
+    popup.style.top = "20px";
+    popup.style.right = "20px";
+    popup.style.background = "#fff";
+    popup.style.color = "#333";
+    popup.style.border = "1px solid #d4af37";
+    popup.style.borderRadius = "12px";
+    popup.style.padding = "12px 18px";
+    popup.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
+    popup.style.zIndex = "9999";
+    popup.style.fontSize = "15px";
+    popup.style.opacity = "0";
+    popup.style.transition = "opacity 0.4s ease";
+    document.body.appendChild(popup);
+
+    // Fade in
+    requestAnimationFrame(() => {
+      popup.style.opacity = "1";
+    });
+
+    // Auto fade out & remove
+    setTimeout(() => {
+      popup.style.opacity = "0";
+      setTimeout(() => popup.remove(), 400);
+    }, 2000);
+  });
+}
+
+</script>
+<script>
+document.getElementById("installment-feature").addEventListener("click", () => {
+  // Create popup container
+  const popup = document.createElement("div");
+  popup.style.position = "fixed";
+  popup.style.top = "0";
+  popup.style.left = "0";
+  popup.style.width = "100%";
+  popup.style.height = "100%";
+  popup.style.background = "rgba(0,0,0,0.5)";
+  popup.style.display = "flex";
+  popup.style.alignItems = "center";
+  popup.style.justifyContent = "center";
+  popup.style.zIndex = "9999";
+
+  // Popup content box
+  const box = document.createElement("div");
+  box.style.background = "#fffaf2";
+  box.style.border = "1px solid var(--gold)";
+  box.style.borderRadius = "14px";
+  box.style.padding = "24px";
+  box.style.width = "320px";
+  box.style.textAlign = "center";
+  box.style.boxShadow = "0 4px 20px rgba(0,0,0,0.2)";
+  box.style.animation = "fadeIn 0.3s ease";
+
+  box.innerHTML = `
+    <h3 style="color:var(--gold);margin-bottom:10px;">Monthly Installment Plan</h3>
+    <p style="color:#333;font-size:15px;line-height:1.6;">
+      Purchase your favourite jewellery and pay in easy monthly installments.<br><br>
+      Flexible EMI options available from 3 to 12 months.
+    </p>
+    <button id="joinPlanBtn" style="margin-top:15px;padding:10px 16px;background:var(--gold);color:#fff;border:none;border-radius:8px;cursor:pointer;">
+      Join on WhatsApp
+    </button>
+  `;
+
+  popup.appendChild(box);
+  document.body.appendChild(popup);
+
+  // WhatsApp button logic
+  document.getElementById("joinPlanBtn").addEventListener("click", () => {
+    const msg = encodeURIComponent("Hi! I'm interested in joining your monthly jewellery installment plan.");
+    window.open(`https://wa.me/918009726406?text=${msg}`, "_blank");
+  });
+
+  // Close popup when clicking outside
+  popup.addEventListener("click", (e) => {
+    if (e.target === popup) popup.remove();
+  });
+});
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/servise-worker.js")
+      .then(reg => console.log("✅ Service Worker registered:", reg))
+      .catch(err => console.log("⚠️ Service Worker failed:", err));
+  });
+}
+</script>
+
+</body>
+</html>

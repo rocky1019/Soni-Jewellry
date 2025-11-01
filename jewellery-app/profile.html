@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile | Soni Jewellers</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#d4af37">
+
+  <!-- Remix Icons (for consistency with your site) -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --gold: #d4af37;
+      --bg: #fffaf2;
+      --text: #222;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: white;
+      color: var(--text);
+      padding: 1rem;
+      font-size: 1.3rem;
+      font-weight: 600;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+
+    .profile-section {
+      background: white;
+      padding: 1rem;
+      margin-bottom: 10px;
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .profile-header img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      margin-right: 1rem;
+    }
+
+    .profile-header .name {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .profile-header a {
+      display: inline-block;
+      color: var(--gold);
+      text-decoration: none;
+      margin-top: 5px;
+      font-weight: 500;
+    }
+
+    .menu-section {
+      background: white;
+      margin-top: 10px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  color: #222;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.menu-item:hover {
+  background: #f9f9f9;
+}
+
+.menu-item i {
+  font-size: 1.2rem;
+  color: #d4af37;
+}
+
+.menu-item span {
+  font-size: 0.95rem;
+  color: #333;
+}
+
+/* remove blue link style */
+.menu-item:link,
+.menu-item:visited,
+.menu-item:hover,
+.menu-item:active {
+  text-decoration: none;
+  color: inherit;
+}
+
+
+    .menu-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .menu-left i {
+      font-size: 1.3rem;
+      color: var(--gold);
+      min-width: 30px;
+      text-align: center;
+    }
+
+    .menu-text span:first-child {
+      font-weight: 600;
+    }
+
+    .menu-right i {
+      color: #555;
+    }
+
+    .powered {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #666;
+      margin: 30px 0 90px;
+    }
+
+    .brand-gradient {
+      font-weight: 700;
+      font-size: 1.1rem;
+      background: linear-gradient(90deg, #c6a300, #ffdb70);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+    }
+
+    /* Bottom Navigation (same as other pages) */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border-top: 1px solid #ddd;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 8px 0;
+      z-index: 999;
+    }
+
+    .bottom-nav a {
+      text-decoration: none;
+      color: #555;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 0.8rem;
+    }
+
+    .bottom-nav a .icon {
+      font-size: 1.4rem;
+      margin-bottom: 3px;
+    }
+
+    .bottom-nav a.active {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    @media (max-width: 600px) {
+      .menu-item { padding: 0.8rem; }
+      .menu-left i { font-size: 1rem; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>My Profile</header>
+
+  <section class="profile-section">
+    <div class="profile-header">
+      <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="user" />
+      <div>
+        <div class="name">Hi, Guest</div>
+        <a href="onboarding.html">Login / Create Account</a>
+      </div>
+    </div>
+  </section>
+
+<!-- Profile Menu -->
+<div class="menu-section">
+  <a href="page.html?page=address" class="menu-item">
+    <div class="menu-left"><i class="ri-map-pin-line"></i><span>Saved Address</span></div>
+    <div class="menu-right"><i class="ri-arrow-right-s-line"></i></div>
+  </a>
+
+  <a href="page.html?page=orders" class="menu-item">
+    <div class="menu-left"><i class="ri-box-3-line"></i><span>Orders</span></div>
+    <div class="menu-right"><i class="ri-arrow-right-s-line"></i></div>
+  </a>
+
+  <a href="page.html?page=wishlist" class="menu-item">
+    <div class="menu-left"><i class="ri-heart-line"></i><span>Wishlist</span></div>
+    <div class="menu-right"><i class="ri-arrow-right-s-line"></i></div>
+  </a>
+
+  <a href="#" class="menu-item" onclick="alert('Your cart is empty!')">
+    <div class="menu-left"><i class="ri-shopping-cart-line"></i><span>Cart</span></div>
+    <div class="menu-right"><i class="ri-arrow-right-s-line"></i></div>
+  </a>
+
+  <a href="page.html?page=bank" class="menu-item">
+    <div class="menu-left"><i class="ri-bank-line"></i><span>Bank Details</span></div>
+    <div class="menu-right"><i class="ri-arrow-right-s-line"></i></div>
+  </a>
+</div>
+
+<div class="menu-section">
+  <a href="page.html?page=about" class="menu-item">
+    <div class="menu-left"><i class="ri-information-line"></i><span>About Us</span></div>
+    <div class="menu-right"><i class="ri-arrow-right-s-line"></i></div>
+  </a>
+
+  <a href="page.html?page=contact" class="menu-item">
+    <div class="menu-left"><i class="ri-phone-line"></i><span>Contact Us</span></div>
+    <div class="menu-right"><i class="ri-arrow-right-s-line"></i></div>
+  </a>
+
+  <a href="page.html?page=terms" class="menu-item">
+    <div class="menu-left"><i class="ri-file-text-line"></i><span>Terms & Policy</span></div>
+    <div class="menu-right"><i class="ri-arrow-right-s-line"></i></div>
+  </a>
+</div>
+
+<!-- 🧭 Admin Button -->
+<button id="adminBtn" style="
+  display:none;
+  margin-top: 20px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 30px;
+  background: #800000;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+">Go to Admin Panel</button>
+
+<div class="powered">
+  Powered By <br>
+  <span class="brand-gradient">Synth Studio</span>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav" role="navigation">
+  <a href="index.html" class="nav-item" data-tab="home">
+    <i class="icon ri-home-5-line"></i>
+    <span>Home</span>
+  </a>
+
+  <a href="search.html" class="nav-item" data-tab="search">
+    <i class="icon ri-search-line"></i>
+    <span>Search</span>
+  </a>
+
+  <a href="#" class="nav-item" data-tab="chat" onclick="openWhatsApp(event)">
+    <i class="icon ri-whatsapp-line"></i>
+    <span>Chat</span>
+  </a>
+
+  <a href="profile.html" class="nav-item active" data-tab="profile">
+    <i class="icon ri-user-line"></i>
+    <span>Profile</span>
+  </a>
+</nav>
+
+
+  <script>
+    // WhatsApp redirect
+    function openWhatsApp(event) {
+      event.preventDefault();
+      window.open("https://wa.me/918009726406", "_blank");
+    }
+  </script>
+ <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyBrHOD-qa8nnXBDqMBWtpMQ8wtXII_F-wU",
+    authDomain: "sonijewellersapp-5d80c.firebaseapp.com",
+    projectId: "sonijewellersapp-5d80c",
+    storageBucket: "sonijewellersapp-5d80c.firebasestorage.app",
+    messagingSenderId: "742309830546",
+    appId: "1:742309830546:web:088f71c01bdaa7d7c5eb4b",
+    measurementId: "G-GLQY4H7K8B"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  const nameElement = document.querySelector('.name');
+  const loginLink = document.querySelector('.profile-header a');
+  const profileSection = document.querySelector('.profile-section');
+  const adminBtn = document.getElementById("adminBtn");
+
+  // List of admin emails
+  const adminEmails = [
+  
+    "jewellerysoni3@gmail.com",
+    "atharvaaghav6@gmail.com"
+    
+  ];
+
+  // Auth state check
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      const displayName = user.displayName || user.email.split('@')[0];
+      nameElement.textContent = `Hi, ${displayName}`;
+      loginLink.style.display = "none";
+
+      // ✅ Show admin button only for admin users
+      if (adminEmails.includes(user.email)) {
+        adminBtn.style.display = "block";
+        adminBtn.onclick = () => {
+          window.location.href = "admin.html";
+        };
+      } else {
+        adminBtn.style.display = "none";
+      }
+
+      // ✅ Add Logout button if not already added
+      if (!document.querySelector('#logoutBtn')) {
+        const logoutBtn = document.createElement('button');
+        logoutBtn.textContent = "Logout";
+        logoutBtn.id = "logoutBtn";
+        logoutBtn.style.marginTop = "8px";
+        logoutBtn.style.padding = "8px 16px";
+        logoutBtn.style.borderRadius = "30px";
+        logoutBtn.style.border = "none";
+        logoutBtn.style.background = "#800000";
+        logoutBtn.style.color = "#fff";
+        logoutBtn.style.cursor = "pointer";
+        logoutBtn.style.fontWeight = "600";
+        logoutBtn.onclick = async () => {
+          await signOut(auth);
+          window.location.href = "login.html";
+        };
+        profileSection.querySelector('.profile-header div').appendChild(logoutBtn);
+      }
+
+    } else {
+      // If not logged in → redirect to login page
+      window.location.href = "login.html";
+    }
+  });
+
+  // ✅ WhatsApp redirect (unchanged)
+  window.openWhatsApp = function(event) {
+    event.preventDefault();
+    window.open("https://wa.me/918009726406", "_blank");
+  };
+</script>
+
+
+</body>
+</html>
