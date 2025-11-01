@@ -2,7 +2,7 @@
   "name": "Soni Jewellers",
   "short_name": "Soni",
   "description": "Elegant Gold & Silver Jewellery Store",
-  "start_url": "/index.html",
+  "start_url": "https://rocky1019.github.io/Soni-Jewellry/jewellery-app/",
   "display": "standalone",
   "background_color": "#fffaf2",
   "theme_color": "#d4af37",
@@ -35,3 +35,4 @@
     }
   ]
 }
+
