@@ -341,9 +341,9 @@
 <div class="metal-row">
   <div class="metal-card" id="gold-card">
     <h4>Gold</h4>
-    <div style="font-size:.9rem;color:var(--muted)">24K (per gram)</div>
+    <div style="font-size:.9rem;color:var(--muted)">18k (per gram)</div>
     <div class="price" id="gold-price">₹—</div>
-    <div class="muted" id="gold-change">Loading...</div>
+    <div class="muted" id="gold-change">+ 3% GST applicable</div>
     <small class="muted" id="gold-updated">Updating...</small>
   </div>
 
@@ -351,7 +351,7 @@
     <h4>Silver</h4>
     <div style="font-size:.9rem;color:var(--muted)">999 (per gram)</div>
     <div class="price" id="silver-price">₹—</div>
-    <div class="muted" id="silver-change">Loading...</div>
+    <div class="muted" id="silver-change">per gram</div>
     <small class="muted" id="silver-updated">Updating...</small>
   </div>
 </div>
@@ -379,13 +379,14 @@
       if (!silverRes.ok) throw new Error("Silver fetch failed");
       const silverData = await silverRes.json();
 
-      // --- Convert per troy ounce → per gram ---
+      // --- Convert from per troy ounce to per gram ---
       const ozToGram = 31.1035;
-      const goldPerGram = goldData.price / ozToGram;
+      const gold24kPerGram = goldData.price / ozToGram;
+      const gold18kPerGram = gold24kPerGram * 0.75; // 18K gold = 75% of 24K
       const silverPerGram = silverData.price / ozToGram;
 
       // --- Update UI ---
-      document.getElementById("gold-price").textContent = "₹" + goldPerGram.toFixed(2);
+      document.getElementById("gold-price").textContent = "₹" + gold18kPerGram.toFixed(2);
       document.getElementById("silver-price").textContent = "₹" + silverPerGram.toFixed(2);
 
       const time = new Date().toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
@@ -397,7 +398,7 @@
 
       // Save last update to localStorage
       localStorage.setItem("lastMetalUpdate", Date.now());
-      localStorage.setItem("goldPrice", goldPerGram.toFixed(2));
+      localStorage.setItem("goldPrice", gold18kPerGram.toFixed(2));
       localStorage.setItem("silverPrice", silverPerGram.toFixed(2));
 
     } catch (err) {
@@ -418,15 +419,14 @@
     }
   }
 
-  // Only fetch if last update > 2 days ago
+  // --- Cache control: only fetch once every 48 hours ---
   const lastUpdate = localStorage.getItem("lastMetalUpdate");
   const now = Date.now();
-  const twoDays = 2 * 24 * 60 * 60 * 1000; // 2 days in ms
+  const twoDays = 2 * 24 * 60 * 60 * 1000;
 
   if (!lastUpdate || now - lastUpdate > twoDays) {
     fetchMetalRates();
   } else {
-    // Use saved cached data
     const savedGold = localStorage.getItem("goldPrice");
     const savedSilver = localStorage.getItem("silverPrice");
     if (savedGold && savedSilver) {
@@ -434,14 +434,14 @@
       document.getElementById("silver-price").textContent = "₹" + savedSilver;
       document.getElementById("gold-change").textContent = "(cached data)";
       document.getElementById("silver-change").textContent = "(cached data)";
+    } else {
+      fetchMetalRates(); // fallback in case cache missing
     }
   }
 
-  // Auto recheck every 48 hours
+  // Auto refresh every 48 hours (not on page reload)
   setInterval(fetchMetalRates, 2 * 24 * 60 * 60 * 1000);
 </script>
-
-
 
 
     <!-- features -->
@@ -898,5 +898,6 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
