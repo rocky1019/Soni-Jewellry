@@ -658,7 +658,10 @@
 </script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-  import { getFirestore, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+  import { 
+    getFirestore, collection, query, orderBy, limit, getDocs, 
+    doc, onSnapshot 
+  } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
   // Firebase config (same as your project)
   const firebaseConfig = {
@@ -673,6 +676,34 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+
+  // --- 🔔 Real-time Metal Rates (Gold & Silver) ---
+  const goldRef = doc(db, "metalRates", "gold");
+  const silverRef = doc(db, "metalRates", "silver");
+
+  // Listen to gold rate live updates
+  onSnapshot(goldRef, (docSnap) => {
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const goldPriceElem = document.getElementById("gold-price");
+      const goldChangeElem = document.getElementById("gold-change");
+      if (goldPriceElem) goldPriceElem.textContent = `₹${data["18k"] ?? "—"}`;
+      if (goldChangeElem) goldChangeElem.textContent = "Updated live";
+    }
+  });
+
+  // Listen to silver rate live updates
+  onSnapshot(silverRef, (docSnap) => {
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const silverPriceElem = document.getElementById("silver-price");
+      const silverChangeElem = document.getElementById("silver-change");
+      if (silverPriceElem) silverPriceElem.textContent = `₹${data["perGram"] ?? "—"}`;
+      if (silverChangeElem) silverChangeElem.textContent = "Updated live";
+    }
+  });
+
+  // ---------------- Existing Code Below ----------------
 
   const newArrivalContainer = document.querySelector('.prod-row.new-arrival');
 
@@ -737,21 +768,20 @@
             <div class="g">${escapeHtml(data.gram)} Grams</div>
             <div style="margin-top:6px;color:#800000;font-weight:700">${escapeHtml(data.price)}</div>
             <div style="margin-top:10px;text-align:center">
-  <button class="view-btn"
-    style="padding:10px 16px;
-           border-radius:30px;
-           border:none;
-           background:linear-gradient(135deg,#d4af37,#b8901c);
-           color:#fff;
-           font-weight:600;
-           letter-spacing:0.3px;
-           cursor:pointer;
-           transition:all 0.3s ease;
-           box-shadow:0 3px 10px rgba(0,0,0,0.15)">
-    View Details
-  </button>
-</div>
-
+              <button class="view-btn"
+                style="padding:10px 16px;
+                       border-radius:30px;
+                       border:none;
+                       background:linear-gradient(135deg,#d4af37,#b8901c);
+                       color:#fff;
+                       font-weight:600;
+                       letter-spacing:0.3px;
+                       cursor:pointer;
+                       transition:all 0.3s ease;
+                       box-shadow:0 3px 10px rgba(0,0,0,0.15)">
+                View Details
+              </button>
+            </div>
           </div>
         `;
         // attach click for view details
@@ -798,41 +828,43 @@
 
   // initial load
   loadNewArrivals(6);
+
   // Wishlist popup for heart icon
-const heartIcon = document.querySelector('.ri-heart-line');
-if (heartIcon) {
-  heartIcon.addEventListener('click', () => {
-    const popup = document.createElement('div');
-    popup.textContent = "You haven’t wishlisted anything yet 💛";
-    popup.style.position = "fixed";
-    popup.style.top = "20px";
-    popup.style.right = "20px";
-    popup.style.background = "#fff";
-    popup.style.color = "#333";
-    popup.style.border = "1px solid #d4af37";
-    popup.style.borderRadius = "12px";
-    popup.style.padding = "12px 18px";
-    popup.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
-    popup.style.zIndex = "9999";
-    popup.style.fontSize = "15px";
-    popup.style.opacity = "0";
-    popup.style.transition = "opacity 0.4s ease";
-    document.body.appendChild(popup);
-
-    // Fade in
-    requestAnimationFrame(() => {
-      popup.style.opacity = "1";
-    });
-
-    // Auto fade out & remove
-    setTimeout(() => {
+  const heartIcon = document.querySelector('.ri-heart-line');
+  if (heartIcon) {
+    heartIcon.addEventListener('click', () => {
+      const popup = document.createElement('div');
+      popup.textContent = "You haven’t wishlisted anything yet 💛";
+      popup.style.position = "fixed";
+      popup.style.top = "20px";
+      popup.style.right = "20px";
+      popup.style.background = "#fff";
+      popup.style.color = "#333";
+      popup.style.border = "1px solid #d4af37";
+      popup.style.borderRadius = "12px";
+      popup.style.padding = "12px 18px";
+      popup.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
+      popup.style.zIndex = "9999";
+      popup.style.fontSize = "15px";
       popup.style.opacity = "0";
-      setTimeout(() => popup.remove(), 400);
-    }, 2000);
-  });
-}
+      popup.style.transition = "opacity 0.4s ease";
+      document.body.appendChild(popup);
+
+      // Fade in
+      requestAnimationFrame(() => {
+        popup.style.opacity = "1";
+      });
+
+      // Auto fade out & remove
+      setTimeout(() => {
+        popup.style.opacity = "0";
+        setTimeout(() => popup.remove(), 400);
+      }, 2000);
+    });
+  }
 
 </script>
+
 <script>
 document.getElementById("installment-feature").addEventListener("click", () => {
   // Create popup container
@@ -931,6 +963,7 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
 
