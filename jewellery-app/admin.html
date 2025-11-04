@@ -93,45 +93,44 @@
 </div>
 
   <!-- libs -->
-  <script type="module">
-    // --- Admin password protection ---
-const ADMIN_PASSWORD = "soniadmin123"; // <--- change this to your real password
+ <script type="module">
+  // --- Admin password protection ---
+  const ADMIN_PASSWORD = "soniadmin123"; // <--- change this to your real password
 
-const passPrompt = document.getElementById('adminPasswordPrompt');
-const passInput = document.getElementById('adminPassInput');
-const passBtn = document.getElementById('adminPassBtn');
-const passError = document.getElementById('adminPassError');
-const panel = document.getElementById('panel');
+  const passPrompt = document.getElementById('adminPasswordPrompt');
+  const passInput = document.getElementById('adminPassInput');
+  const passBtn = document.getElementById('adminPassBtn');
+  const passError = document.getElementById('adminPassError');
+  const panel = document.getElementById('panel');
 
-// Check if already unlocked in localStorage
-if (localStorage.getItem("adminUnlocked") === "true") {
-  passPrompt.style.display = "none";
-  panel.style.display = "block";
-} else {
-  panel.style.display = "none";
-}
-
-// On click verify
-passBtn.addEventListener("click", () => {
-  const entered = passInput.value.trim();
-  if (entered === ADMIN_PASSWORD) {
-    localStorage.setItem("adminUnlocked", "true");
+  if (localStorage.getItem("adminUnlocked") === "true") {
     passPrompt.style.display = "none";
     panel.style.display = "block";
   } else {
-    passError.textContent = "Incorrect password. Try again.";
+    panel.style.display = "none";
   }
-});
 
-  // Firebase imports
+  passBtn.addEventListener("click", () => {
+    const entered = passInput.value.trim();
+    if (entered === ADMIN_PASSWORD) {
+      localStorage.setItem("adminUnlocked", "true");
+      passPrompt.style.display = "none";
+      panel.style.display = "block";
+    } else {
+      passError.textContent = "Incorrect password. Try again.";
+    }
+  });
+
+  // --- Firebase + Supabase imports ---
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+  import { 
+    getFirestore, collection, addDoc, serverTimestamp, 
+    doc, setDoc, getDoc 
+  } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
-
-  // Supabase import (ESM bundle)
   import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-  // --- CONFIG (use your values) ---
+  // --- Configs ---
   const firebaseConfig = {
     apiKey: "AIzaSyBrHOD-qa8nnXBDqMBWtpMQ8wtXII_F-wU",
     authDomain: "sonijewellersapp-5d80c.firebaseapp.com",
@@ -142,34 +141,28 @@ passBtn.addEventListener("click", () => {
     measurementId: "G-GLQY4H7K8B"
   };
 
-  // Supabase config (your supplied values)
   const SUPABASE_URL = "https://mcyidvzglsbniecfkuzu.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jeWlkdnpnbHNibmllY2ZrdXp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE4NTU4MjgsImV4cCI6MjA3NzQzMTgyOH0.IcUtd_P4GCo1-oQAGlAEkmy7IixGozqYlxhbZjSGwhs";
 
-  // Initialize services
   const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
   const db = getFirestore(app);
+  const auth = getAuth(app);
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // DOM
   const statusMsg = document.getElementById('statusMsg');
   const form = document.getElementById('addProductForm');
   const submitBtn = document.getElementById('submitBtn');
   const loading = document.getElementById('loading');
   const previewWrap = document.getElementById('previewWrap');
 
-  // Admin emails (lowercase)
   const adminEmails = [
     "jewellerysoni3@gmail.com",
     "atharvaaghav6@gmail.com"
   ];
 
-  // Helper to show/hide
   const show = el => el.classList.remove('hidden');
   const hide = el => el.classList.add('hidden');
 
-  // preview image when chosen
   document.getElementById('p_image').addEventListener('change', (e)=>{
     previewWrap.innerHTML = "";
     const f = e.target.files[0];
@@ -179,25 +172,21 @@ passBtn.addEventListener("click", () => {
     previewWrap.appendChild(img);
   });
 
-  // check admin login
   onAuthStateChanged(auth, (user) => {
     if(user && user.email && adminEmails.includes(user.email.toLowerCase())) {
       statusMsg.textContent = `Welcome admin — ${user.email}`;
       show(form);
-      hide(statusMsg); // hide the status message area
+      hide(statusMsg);
     } else if (user) {
-      // logged in but not admin
       statusMsg.textContent = "Access denied — admins only.";
       hide(form);
     } else {
-      // not logged in at all
       statusMsg.textContent = "Not signed in — redirecting to login...";
       hide(form);
       setTimeout(()=> window.location.href = "login.html", 800);
     }
   });
 
-  // Form submit flow
   submitBtn.addEventListener('click', async () => {
     const name = document.getElementById('p_name').value.trim();
     const gram = document.getElementById('p_gram').value.trim();
@@ -215,28 +204,21 @@ passBtn.addEventListener("click", () => {
       show(loading);
       submitBtn.disabled = true;
 
-      // create a unique filename: timestamp + original name
       const timestamp = Date.now();
       const ext = file.name.split('.').pop();
       const cleanName = name.replace(/\s+/g,'-').toLowerCase().replace(/[^a-z0-9\-]/g,'');
       const filename = `${cleanName}-${timestamp}.${ext}`;
-      const bucket = 'products'; // your bucket
+      const bucket = 'products';
 
-      // upload to supabase
-      const { data, error: uploadErr } = await supabase.storage
+      const { error: uploadErr } = await supabase.storage
         .from(bucket)
         .upload(filename, file, { upsert: false });
 
-      if (uploadErr) {
-        console.error('Supabase upload error', uploadErr);
-        throw uploadErr;
-      }
+      if (uploadErr) throw uploadErr;
 
-      // build public URL
       const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${encodeURIComponent(filename)}`;
 
-      // store product doc in Firestore
-      const docRef = await addDoc(collection(db, 'products'), {
+      await addDoc(collection(db, 'products'), {
         name,
         gram,
         price,
@@ -247,7 +229,7 @@ passBtn.addEventListener("click", () => {
 
       hide(loading);
       submitBtn.disabled = false;
-      alert('Product added successfully ✅');
+      alert('✅ Product added successfully!');
       form.reset();
       previewWrap.innerHTML = "";
 
@@ -255,10 +237,72 @@ passBtn.addEventListener("click", () => {
       console.error('Add product error', err);
       hide(loading);
       submitBtn.disabled = false;
-      alert('Could not add product. See console for details.');
+      alert('❌ Could not add product. Check console.');
     }
   });
 
-  </script>
+  // ------------------------------
+  // 🔔 NEW SECTION: Metal Rate Updater
+  // ------------------------------
+  const metalForm = document.createElement('section');
+  metalForm.className = 'admin-panel';
+  metalForm.style.marginTop = '30px';
+  metalForm.innerHTML = `
+    <h2 style="color:#800000;margin-bottom:12px;">Update Metal Rates</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div>
+        <label>Gold 18k (per gram)</label>
+        <input type="number" id="goldRateInput" placeholder="e.g. 5890">
+      </div>
+      <div>
+        <label>Silver (per gram)</label>
+        <input type="number" id="silverRateInput" placeholder="e.g. 72.5">
+      </div>
+    </div>
+    <button id="updateRatesBtn" class="btn btn-primary" style="margin-top:16px;">Save Rates</button>
+    <div id="rateMsg" style="margin-top:10px;font-size:0.9rem;color:#444;"></div>
+  `;
+  document.body.appendChild(metalForm);
+
+  const goldInput = document.getElementById('goldRateInput');
+  const silverInput = document.getElementById('silverRateInput');
+  const updateBtn = document.getElementById('updateRatesBtn');
+  const rateMsg = document.getElementById('rateMsg');
+
+  // Fetch existing rates and show them
+  async function loadRates() {
+    try {
+      const goldDoc = await getDoc(doc(db, "metalRates", "gold"));
+      const silverDoc = await getDoc(doc(db, "metalRates", "silver"));
+      if (goldDoc.exists()) goldInput.value = goldDoc.data()["18k"] || "";
+      if (silverDoc.exists()) silverInput.value = silverDoc.data()["perGram"] || "";
+    } catch (err) {
+      console.error("Error loading rates:", err);
+    }
+  }
+
+  updateBtn.addEventListener("click", async () => {
+    const goldVal = parseFloat(goldInput.value);
+    const silverVal = parseFloat(silverInput.value);
+    if (isNaN(goldVal) || isNaN(silverVal)) {
+      alert("Please enter valid numeric values for both rates.");
+      return;
+    }
+
+    try {
+      rateMsg.textContent = "Updating rates...";
+      await setDoc(doc(db, "metalRates", "gold"), { "18k": goldVal });
+      await setDoc(doc(db, "metalRates", "silver"), { "perGram": silverVal });
+      rateMsg.textContent = "✅ Rates updated successfully (real-time update visible on site).";
+    } catch (err) {
+      console.error("Error updating rates:", err);
+      rateMsg.textContent = "❌ Failed to update rates.";
+    }
+  });
+
+  loadRates();
+</script>
+
 </body>
 </html>
+
