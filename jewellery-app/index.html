@@ -267,7 +267,7 @@
       <div class="avatar">SJ</div>
       <div>
         <h3>Welcome</h3>
-        <p class="muted">Sign in to access wishlist and orders</p>
+        <p class="muted">Sign in to access wishlist & orders</p>
       </div>
     </div>
 
@@ -341,107 +341,33 @@
 <div class="metal-row">
   <div class="metal-card" id="gold-card">
     <h4>Gold</h4>
-    <div style="font-size:.9rem;color:var(--muted)">18k (per gram)</div>
+    <div style="font-size:.9rem;color:var(--muted)">24k (per gram)</div>
     <div class="price" id="gold-price">₹—</div>
     <div class="muted" id="gold-change">+ 3% GST applicable</div>
     <small class="muted" id="gold-updated">Updating...</small>
   </div>
 
-  <div class="metal-card" style="background:#fff7e6" id="silver-card">
-    <h4>Silver</h4>
-    <div style="font-size:.9rem;color:var(--muted)">999 (per gram)</div>
-    <div class="price" id="silver-price">₹—</div>
-    <div class="muted" id="silver-change">per gram</div>
-    <small class="muted" id="silver-updated">Updating...</small>
-  </div>
+<!-- Gold 18K -->
+<div class="metal-card" id="gold18-card">
+  <h4>Gold</h4>
+  <div style="font-size:.9rem;color:var(--muted)">18k (per gram)</div>
+  <div class="price" id="gold18-price">₹—</div>
+  <div class="muted" id="gold18-change">+ 3% GST applicable</div>
+  <small class="muted" id="gold18-updated">Updating...</small>
 </div>
 
-<script>
-  async function fetchMetalRates() {
-    try {
-      // --- Fetch GOLD ---
-      const goldRes = await fetch("https://www.goldapi.io/api/XAU/INR", {
-        headers: {
-          "x-access-token": "goldapi-b21ey0smhg366il-io",
-          "Content-Type": "application/json"
-        }
-      });
-      if (!goldRes.ok) throw new Error("Gold fetch failed");
-      const goldData = await goldRes.json();
+<!-- Silver 999 -->
+<div class="metal-card" style="background:#fff7e6" id="silver999-card">
+  <h4>Silver</h4>
+  <div style="font-size:.9rem;color:var(--muted)">999 (per gram)</div>
+  <div class="price" id="silver999-price">₹—</div>
+  <div class="muted" id="silver999-change">per gram</div>
+  <small class="muted" id="silver999-updated">Updating...</small>
+</div>
 
-      // --- Fetch SILVER ---
-      const silverRes = await fetch("https://www.goldapi.io/api/XAG/INR", {
-        headers: {
-          "x-access-token": "goldapi-b21ey0smhg366il-io",
-          "Content-Type": "application/json"
-        }
-      });
-      if (!silverRes.ok) throw new Error("Silver fetch failed");
-      const silverData = await silverRes.json();
 
-      // --- Convert from per troy ounce to per gram ---
-      const ozToGram = 31.1035;
-      const gold24kPerGram = goldData.price / ozToGram;
-      const gold18kPerGram = gold24kPerGram * 0.75; // 18K gold = 75% of 24K
-      const silverPerGram = silverData.price / ozToGram;
 
-      // --- Update UI ---
-      document.getElementById("gold-price").textContent = "₹" + gold18kPerGram.toFixed(2);
-      document.getElementById("silver-price").textContent = "₹" + silverPerGram.toFixed(2);
 
-      const time = new Date().toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
-      document.getElementById("gold-updated").textContent = "Updated on " + time;
-      document.getElementById("silver-updated").textContent = "Updated on " + time;
-
-      document.getElementById("gold-change").textContent = "+ 3% GST applicable";
-      document.getElementById("silver-change").textContent = "per gram";
-
-      // Save last update to localStorage
-      localStorage.setItem("lastMetalUpdate", Date.now());
-      localStorage.setItem("goldPrice", gold18kPerGram.toFixed(2));
-      localStorage.setItem("silverPrice", silverPerGram.toFixed(2));
-
-    } catch (err) {
-      console.error("Failed to fetch metal rates:", err);
-
-      // Try to show last saved values if available
-      const savedGold = localStorage.getItem("goldPrice");
-      const savedSilver = localStorage.getItem("silverPrice");
-      if (savedGold && savedSilver) {
-        document.getElementById("gold-price").textContent = "₹" + savedGold;
-        document.getElementById("silver-price").textContent = "₹" + savedSilver;
-        document.getElementById("gold-change").textContent = "(cached data)";
-        document.getElementById("silver-change").textContent = "(cached data)";
-      } else {
-        document.getElementById("gold-price").textContent = "Error";
-        document.getElementById("silver-price").textContent = "Error";
-      }
-    }
-  }
-
-  // --- Cache control: only fetch once every 48 hours ---
-  const lastUpdate = localStorage.getItem("lastMetalUpdate");
-  const now = Date.now();
-  const twoDays = 2 * 24 * 60 * 60 * 1000;
-
-  if (!lastUpdate || now - lastUpdate > twoDays) {
-    fetchMetalRates();
-  } else {
-    const savedGold = localStorage.getItem("goldPrice");
-    const savedSilver = localStorage.getItem("silverPrice");
-    if (savedGold && savedSilver) {
-      document.getElementById("gold-price").textContent = "₹" + savedGold;
-      document.getElementById("silver-price").textContent = "₹" + savedSilver;
-      document.getElementById("gold-change").textContent = "(cached data)";
-      document.getElementById("silver-change").textContent = "(cached data)";
-    } else {
-      fetchMetalRates(); // fallback in case cache missing
-    }
-  }
-
-  // Auto refresh every 48 hours (not on page reload)
-  setInterval(fetchMetalRates, 2 * 24 * 60 * 60 * 1000);
-</script>
 
 
     <!-- features -->
@@ -533,6 +459,20 @@
         </div>
       </div>
     </div>
+<section class="section">
+  <h2>🔥 Hot Deals</h2>
+  <div class="prod-row hot-deals"></div>
+</section>
+
+<section class="section">
+  <h2>🥇 Gold Collection</h2>
+  <div class="prod-row gold"></div>
+</section>
+
+<section class="section">
+  <h2>🥈 Silver Collection</h2>
+  <div class="prod-row silver"></div>
+</section>
 
   </main>
 
@@ -663,7 +603,7 @@
     doc, onSnapshot 
   } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
-  // Firebase config (same as your project)
+  // Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyBrHOD-qa8nnXBDqMBWtpMQ8wtXII_F-wU",
     authDomain: "sonijewellersapp-5d80c.firebaseapp.com",
@@ -677,37 +617,56 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // --- 🔔 Real-time Metal Rates (Gold & Silver) ---
-  const goldRef = doc(db, "metalRates", "gold");
-  const silverRef = doc(db, "metalRates", "silver");
+ // --- 🔔 Real-time Metal Rates (Gold & Silver) ---
 
-  // Listen to gold rate live updates
-  onSnapshot(goldRef, (docSnap) => {
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      const goldPriceElem = document.getElementById("gold-price");
-      const goldChangeElem = document.getElementById("gold-change");
-      if (goldPriceElem) goldPriceElem.textContent = `₹${data["18k"] ?? "—"}`;
-      if (goldChangeElem) goldChangeElem.textContent = "Updated live";
-    }
-  });
+const goldRef = doc(db, "metalRates", "gold");
+const silverRef = doc(db, "metalRates", "silver");
 
-  // Listen to silver rate live updates
-  onSnapshot(silverRef, (docSnap) => {
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      const silverPriceElem = document.getElementById("silver-price");
-      const silverChangeElem = document.getElementById("silver-change");
-      if (silverPriceElem) silverPriceElem.textContent = `₹${data["perGram"] ?? "—"}`;
-      if (silverChangeElem) silverChangeElem.textContent = "Updated live";
-    }
-  });
+// GOLD: 18k & 24k
+onSnapshot(goldRef, (docSnap) => {
+  if (!docSnap.exists()) return;
+  const data = docSnap.data();
 
-  // ---------------- Existing Code Below ----------------
+  const gold24Elem = document.getElementById("gold-price");      // 24k
+  const gold18Elem = document.getElementById("gold18-price");    // 18k
+  const gold24Change = document.getElementById("gold-change");
+  const gold18Change = document.getElementById("gold18-change");
+  const gold18Updated = document.getElementById("gold18-updated");
 
-  const newArrivalContainer = document.querySelector('.prod-row.new-arrival');
+  if (gold24Elem) gold24Elem.textContent = `₹${data["24k"] ?? "—"}`;
+  if (gold18Elem) gold18Elem.textContent = `₹${data["18k"] ?? "—"}`;
+  if (gold24Change) gold24Change.textContent = "Updated live";
+  if (gold18Change) gold18Change.textContent = "Updated live";
+  if (gold18Updated) gold18Updated.textContent = "Updated from Admin Panel";
+});
 
-  // modal elements (create modal programmatically)
+// SILVER: 925 & 999
+onSnapshot(silverRef, (docSnap) => {
+  if (!docSnap.exists()) return;
+  const data = docSnap.data();
+
+  const silver999Elem = document.getElementById("silver999-price");
+  const silver999Change = document.getElementById("silver999-change");
+  const silver999Updated = document.getElementById("silver999-updated");
+
+  const silver925Elem = document.getElementById("silver925-price");
+  const silver925Change = document.getElementById("silver925-change");
+  const silver925Updated = document.getElementById("silver925-updated");
+
+  if (silver999Elem) silver999Elem.textContent = `₹${data["silver999"] ?? "—"}`;
+  if (silver999Change) silver999Change.textContent = "Updated live";
+  if (silver999Updated) silver999Updated.textContent = "Updated from Admin Panel";
+
+  if (silver925Elem) silver925Elem.textContent = `₹${data["silver925"] ?? "—"}`;
+  if (silver925Change) silver925Change.textContent = "Updated live";
+  if (silver925Updated) silver925Updated.textContent = "Updated from Admin Panel";
+});
+
+// NEW ARRIVALS CONTAINER
+const newArrivalContainer = document.querySelector('.prod-row.new-arrival');
+
+
+  // modal setup
   const modal = document.createElement('div');
   modal.className = 'product-modal';
   modal.style.position = 'fixed';
@@ -754,10 +713,12 @@
       const q = query(collection(db, 'products'), orderBy('timestamp', 'desc'), limit(limitCount));
       const snap = await getDocs(q);
 
-      newArrivalContainer.innerHTML = ''; // clear existing
+      newArrivalContainer.innerHTML = '';
 
       snap.forEach(doc => {
         const data = doc.data();
+        if (data.section && data.section !== "newarrival") return;
+
         const card = document.createElement('div');
         card.className = 'prod-card';
         card.style.minHeight = '260px';
@@ -769,22 +730,14 @@
             <div style="margin-top:6px;color:#800000;font-weight:700">${escapeHtml(data.price)}</div>
             <div style="margin-top:10px;text-align:center">
               <button class="view-btn"
-                style="padding:10px 16px;
-                       border-radius:30px;
-                       border:none;
-                       background:linear-gradient(135deg,#d4af37,#b8901c);
-                       color:#fff;
-                       font-weight:600;
-                       letter-spacing:0.3px;
-                       cursor:pointer;
-                       transition:all 0.3s ease;
+                style="padding:10px 16px;border-radius:30px;border:none;background:linear-gradient(135deg,#d4af37,#b8901c);
+                       color:#fff;font-weight:600;letter-spacing:0.3px;cursor:pointer;transition:all 0.3s ease;
                        box-shadow:0 3px 10px rgba(0,0,0,0.15)">
                 View Details
               </button>
             </div>
           </div>
         `;
-        // attach click for view details
         const viewBtn = card.querySelector('.view-btn');
         viewBtn.addEventListener('click', () => {
           modalImg.src = data.imageUrl || 'assets/images/placeholder.jpg';
@@ -792,9 +745,8 @@
           modalGram.textContent = data.gram;
           modalPrice.textContent = data.price;
           modalDesc.textContent = data.description || '';
-          // prepare buy now
           modalBuy.onclick = () => {
-            const waNumber = '918009726406'; // demo number - update as needed
+            const waNumber = '918009726406';
             const message = `Hello! I'm interested in the product: ${data.name} (${data.gram}g) - ${data.price}`;
             const url = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
             window.open(url, '_blank');
@@ -805,7 +757,6 @@
         newArrivalContainer.appendChild(card);
       });
 
-      // if no products
       if (snap.size === 0) {
         newArrivalContainer.innerHTML = '<div style="padding:18px;color:#666">No new arrivals yet.</div>';
       }
@@ -816,7 +767,6 @@
     }
   }
 
-  // small helper for XSS-safe simple text
   function escapeHtml(str='') {
     return String(str)
       .replaceAll('&','&amp;')
@@ -826,10 +776,9 @@
       .replaceAll("'",'&#039;');
   }
 
-  // initial load
   loadNewArrivals(6);
 
-  // Wishlist popup for heart icon
+  // Wishlist popup
   const heartIcon = document.querySelector('.ri-heart-line');
   if (heartIcon) {
     heartIcon.addEventListener('click', () => {
@@ -850,12 +799,7 @@
       popup.style.transition = "opacity 0.4s ease";
       document.body.appendChild(popup);
 
-      // Fade in
-      requestAnimationFrame(() => {
-        popup.style.opacity = "1";
-      });
-
-      // Auto fade out & remove
+      requestAnimationFrame(() => popup.style.opacity = "1");
       setTimeout(() => {
         popup.style.opacity = "0";
         setTimeout(() => popup.remove(), 400);
@@ -863,7 +807,136 @@
     });
   }
 
+  // ------------------- 🔥 HOT DEALS SECTION -------------------
+  const hotDealsContainer = document.querySelector('.prod-row.hot-deals');
+
+  async function loadHotDeals(limitCount = 6) {
+    try {
+      const q = query(collection(db, 'products'), orderBy('timestamp', 'desc'), limit(limitCount));
+      const snap = await getDocs(q);
+      hotDealsContainer.innerHTML = '';
+
+      snap.forEach(doc => {
+        const data = doc.data();
+        if (data.section !== "hotdeals") return;
+
+        const card = document.createElement('div');
+        card.className = 'prod-card';
+        card.style.minHeight = '260px';
+        card.innerHTML = `
+          <img src="${data.imageUrl || 'assets/images/placeholder.jpg'}" alt="${escapeHtml(data.name)}" />
+          <div class="meta">
+            <small>${escapeHtml(data.name)}</small>
+            <div class="g">${escapeHtml(data.gram)} Grams</div>
+            <div style="margin-top:6px;color:#800000;font-weight:700">${escapeHtml(data.price)}</div>
+            <div style="margin-top:10px;text-align:center">
+              <button class="view-btn"
+                style="padding:10px 16px;border-radius:30px;border:none;background:linear-gradient(135deg,#d4af37,#b8901c);
+                       color:#fff;font-weight:600;letter-spacing:0.3px;cursor:pointer;transition:all 0.3s ease;
+                       box-shadow:0 3px 10px rgba(0,0,0,0.15)">
+                View Details
+              </button>
+            </div>
+          </div>
+        `;
+
+        const viewBtn = card.querySelector('.view-btn');
+        viewBtn.addEventListener('click', () => {
+          modalImg.src = data.imageUrl || 'assets/images/placeholder.jpg';
+          modalName.textContent = data.name;
+          modalGram.textContent = data.gram;
+          modalPrice.textContent = data.price;
+          modalDesc.textContent = data.description || '';
+          modalBuy.onclick = () => {
+            const waNumber = '918009726406';
+            const message = `Hello! I'm interested in this Hot Deal: ${data.name} (${data.gram}g) - ${data.price}`;
+            const url = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+          };
+          modal.style.display = 'flex';
+        });
+
+        hotDealsContainer.appendChild(card);
+      });
+
+      if (hotDealsContainer.innerHTML === '') {
+        hotDealsContainer.innerHTML = '<div style="padding:18px;color:#666">No hot deals available yet.</div>';
+      }
+    } catch (err) {
+      console.error('Error loading hot deals:', err);
+      hotDealsContainer.innerHTML = '<div style="padding:18px;color:#666">Failed to load hot deals.</div>';
+    }
+  }
+
+  // ------------------- 🥇 GOLD & SILVER SUBSECTIONS -------------------
+  const goldContainer = document.querySelector('.prod-row.gold');
+  const silverContainer = document.querySelector('.prod-row.silver');
+
+  async function loadCategoryProducts(sectionName, container, limitCount = 6) {
+    try {
+      const q = query(collection(db, 'products'), orderBy('timestamp', 'desc'), limit(limitCount));
+      const snap = await getDocs(q);
+      container.innerHTML = '';
+
+      snap.forEach(doc => {
+        const data = doc.data();
+        if (data.section !== sectionName) return;
+
+        const card = document.createElement('div');
+        card.className = 'prod-card';
+        card.style.minHeight = '260px';
+        card.innerHTML = `
+          <img src="${data.imageUrl || 'assets/images/placeholder.jpg'}" alt="${escapeHtml(data.name)}" />
+          <div class="meta">
+            <small>${escapeHtml(data.name)}</small>
+            <div class="g">${escapeHtml(data.gram)} Grams</div>
+            <div style="margin-top:6px;color:#800000;font-weight:700">${escapeHtml(data.price)}</div>
+            <div style="margin-top:10px;text-align:center">
+              <button class="view-btn"
+                style="padding:10px 16px;border-radius:30px;border:none;background:linear-gradient(135deg,#d4af37,#b8901c);
+                       color:#fff;font-weight:600;letter-spacing:0.3px;cursor:pointer;transition:all 0.3s ease;
+                       box-shadow:0 3px 10px rgba(0,0,0,0.15)">
+                View Details
+              </button>
+            </div>
+          </div>
+        `;
+
+        const viewBtn = card.querySelector('.view-btn');
+        viewBtn.addEventListener('click', () => {
+          modalImg.src = data.imageUrl || 'assets/images/placeholder.jpg';
+          modalName.textContent = data.name;
+          modalGram.textContent = data.gram;
+          modalPrice.textContent = data.price;
+          modalDesc.textContent = data.description || '';
+          modalBuy.onclick = () => {
+            const waNumber = '918009726406';
+            const message = `Hello! I'm interested in the ${sectionName} product: ${data.name} (${data.gram}g) - ${data.price}`;
+            const url = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+          };
+          modal.style.display = 'flex';
+        });
+
+        container.appendChild(card);
+      });
+
+      if (container.innerHTML === '') {
+        container.innerHTML = `<div style="padding:18px;color:#666">No ${sectionName} products yet.</div>`;
+      }
+    } catch (err) {
+      console.error(`Error loading ${sectionName} products:`, err);
+      container.innerHTML = `<div style="padding:18px;color:#666">Failed to load ${sectionName} items.</div>`;
+    }
+  }
+
+  // ------------------- INITIAL LOAD -------------------
+  loadHotDeals(6);
+  loadCategoryProducts('gold', goldContainer, 6);
+  loadCategoryProducts('silver', silverContainer, 6);
+
 </script>
+
 
 <script>
 document.getElementById("installment-feature").addEventListener("click", () => {
@@ -926,12 +999,12 @@ if ("serviceWorker" in navigator) {
       .catch(err => console.log("⚠️ Service Worker failed:", err));
   });
 }
-</script>
 
+
+</script>
 
 </body>
 </html>
-
 
 
 
