@@ -4,11 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Admin Panel | Soni Jewellers</title>
-  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#d4af37">
-
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#d4af37">
   <style>
     *{box-sizing:border-box}
     body{font-family:"Poppins",sans-serif;background:#fffaf2;color:#222;padding:20px;}
@@ -19,7 +18,7 @@
     form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     form .full{grid-column:1/-1}
     label{font-size:.85rem;color:#444;display:block;margin-bottom:6px}
-    input[type="text"], input[type="number"], textarea, input[type="file"]{
+    input[type="text"], input[type="number"], textarea, input[type="file"], select{
       width:100%;padding:10px;border:1px solid #e6e6e6;border-radius:8px;outline:none;font-size:.95rem;
     }
     textarea{min-height:90px;resize:vertical}
@@ -32,13 +31,17 @@
     .loader{margin-left:8px;display:inline-block}
     .preview{margin-top:12px;display:flex;gap:12px;flex-wrap:wrap}
     .preview img{width:120px;height:120px;object-fit:cover;border-radius:8px;border:1px solid #eee}
+    .product-list{margin-top:20px}
+    .product-item{border:1px solid #eee;padding:10px;border-radius:8px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+    .product-item button{padding:6px 10px;font-size:.85rem}
     @media(max-width:720px){ form{grid-template-columns:1fr} .preview img{width:100px;height:100px} }
   </style>
 </head>
 <body>
   <header>
     <h1>Admin — Add Product</h1>
-    <button class="back-btn" onclick="window.history.back()">← Back</button>
+<button class="back-btn" onclick="window.location.href='index.html'">← Back</button>
+
   </header>
 
   <section class="admin-panel" id="panel">
@@ -70,67 +73,87 @@
         <textarea id="p_desc" placeholder="Short product description (optional)"></textarea>
       </div>
 
+      <div class="full">
+        <label>Product Section:</label>
+        <select id="p_section">
+          <option value="newarrivals">New Arrivals (General)</option>
+          <option value="gold">New Arrivals - Gold</option>
+          <option value="silver">New Arrivals - Silver</option>
+          <option value="hotdeals">Hot Deals</option>
+        </select>
+      </div>
+
       <div class="full actions">
         <button type="button" class="btn btn-primary" id="submitBtn">Add Product</button>
+        <button type="button" class="btn btn-primary hidden" id="updateBtn">Update Product</button>
         <button type="reset" class="btn btn-ghost" id="resetBtn">Reset</button>
         <div id="loading" class="loader hidden">Uploading...</div>
       </div>
 
       <div class="full preview" id="previewWrap"></div>
     </form>
+
+    <!-- Product list for Edit -->
+    <div class="product-list" id="productList"></div>
   </section>
-<div id="adminPasswordPrompt" style="
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  height:100vh;gap:14px;text-align:center;
-">
+
+<div id="adminPasswordPrompt" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:14px;text-align:center;">
   <h2 style="color:#800000;">🔒 Admin Access</h2>
   <p style="color:#444;font-size:0.9rem;">Enter admin panel password to continue</p>
-  <input id="adminPassInput" type="password" placeholder="Enter password" 
-         style="padding:10px 12px;border:1px solid #ddd;border-radius:8px;width:220px;">
-  <button id="adminPassBtn" style="padding:10px 18px;border:none;background:#800000;color:white;
-          border-radius:8px;cursor:pointer;">Unlock</button>
+  <input id="adminPassInput" type="password" placeholder="Enter password" style="padding:10px 12px;border:1px solid #ddd;border-radius:8px;width:220px;">
+  <button id="adminPassBtn" style="padding:10px 18px;border:none;background:#800000;color:white;border-radius:8px;cursor:pointer;">Unlock</button>
   <div id="adminPassError" style="color:red;font-size:0.85rem;"></div>
 </div>
+<!-- Somewhere in your admin panel form -->
+<div class="full">
+  <h3>Update Metal Rates</h3>
+  <div style="display:flex;gap:12px;flex-wrap:wrap">
+    <div>
+      <label>Gold 24k</label>
+      <input type="text" id="gold24-input" placeholder="₹">
+    </div>
+    <div>
+      <label>Gold 18k</label>
+      <input type="text" id="gold18-input" placeholder="₹">
+    </div>
+    <div>
+      <label>Silver 999</label>
+      <input type="text" id="silver999-input" placeholder="₹">
+    </div>
+    <div>
+      <label>Silver 925</label>
+      <input type="text" id="silver925-input" placeholder="₹">
+    </div>
+  </div>
+  <button type="button" class="btn btn-primary" id="updateMetalBtn">Update Rates</button>
+  <div id="metalStatus" class="msg"></div>
+</div>
 
-  <!-- libs -->
- <script type="module">
-  // --- Admin password protection ---
-  const ADMIN_PASSWORD = "soniadmin123"; // <--- change this to your real password
 
+<script type="module">
+  const ADMIN_PASSWORD = "soniadmin123";
   const passPrompt = document.getElementById('adminPasswordPrompt');
   const passInput = document.getElementById('adminPassInput');
   const passBtn = document.getElementById('adminPassBtn');
   const passError = document.getElementById('adminPassError');
   const panel = document.getElementById('panel');
 
-  if (localStorage.getItem("adminUnlocked") === "true") {
-    passPrompt.style.display = "none";
-    panel.style.display = "block";
-  } else {
-    panel.style.display = "none";
-  }
+  if(localStorage.getItem("adminUnlocked")==="true"){passPrompt.style.display="none";panel.style.display="block";}
+  else panel.style.display="none";
 
-  passBtn.addEventListener("click", () => {
-    const entered = passInput.value.trim();
-    if (entered === ADMIN_PASSWORD) {
-      localStorage.setItem("adminUnlocked", "true");
-      passPrompt.style.display = "none";
-      panel.style.display = "block";
-    } else {
-      passError.textContent = "Incorrect password. Try again.";
-    }
+  passBtn.addEventListener("click", ()=>{
+    if(passInput.value.trim()===ADMIN_PASSWORD){
+      localStorage.setItem("adminUnlocked","true");
+      passPrompt.style.display="none";
+      panel.style.display="block";
+    }else passError.textContent="Incorrect password. Try again.";
   });
 
-  // --- Firebase + Supabase imports ---
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-  import { 
-    getFirestore, collection, addDoc, serverTimestamp, 
-    doc, setDoc, getDoc 
-  } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, serverTimestamp, doc, setDoc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
   import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-  // --- Configs ---
   const firebaseConfig = {
     apiKey: "AIzaSyBrHOD-qa8nnXBDqMBWtpMQ8wtXII_F-wU",
     authDomain: "sonijewellersapp-5d80c.firebaseapp.com",
@@ -140,170 +163,197 @@
     appId: "1:742309830546:web:088f71c01bdaa7d7c5eb4b",
     measurementId: "G-GLQY4H7K8B"
   };
-
   const SUPABASE_URL = "https://mcyidvzglsbniecfkuzu.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jeWlkdnpnbHNibmllY2ZrdXp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE4NTU4MjgsImV4cCI6MjA3NzQzMTgyOH0.IcUtd_P4GCo1-oQAGlAEkmy7IixGozqYlxhbZjSGwhs";
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const auth = getAuth(app);
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const supabase = createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-  const statusMsg = document.getElementById('statusMsg');
-  const form = document.getElementById('addProductForm');
-  const submitBtn = document.getElementById('submitBtn');
-  const loading = document.getElementById('loading');
-  const previewWrap = document.getElementById('previewWrap');
+  const statusMsg=document.getElementById('statusMsg');
+  const form=document.getElementById('addProductForm');
+  const submitBtn=document.getElementById('submitBtn');
+  const updateBtn=document.getElementById('updateBtn');
+  const loading=document.getElementById('loading');
+  const previewWrap=document.getElementById('previewWrap');
+  const productList=document.getElementById('productList');
 
-  const adminEmails = [
-    "sonijewellerysoni3@gmail.com",
-    "atharvaaghav6@gmail.com"
-  ];
+  const adminEmails=["jewellerysoni3@gmail.com","atharvaaghav6@gmail.com"];
+  const show=el=>el.classList.remove('hidden');
+  const hide=el=>el.classList.add('hidden');
 
-  const show = el => el.classList.remove('hidden');
-  const hide = el => el.classList.add('hidden');
-
-  document.getElementById('p_image').addEventListener('change', (e)=>{
-    previewWrap.innerHTML = "";
-    const f = e.target.files[0];
+  document.getElementById('p_image').addEventListener('change', e=>{
+    previewWrap.innerHTML="";
+    const f=e.target.files[0];
     if(!f) return;
-    const img = document.createElement('img');
-    img.src = URL.createObjectURL(f);
+    const img=document.createElement('img');
+    img.src=URL.createObjectURL(f);
     previewWrap.appendChild(img);
   });
 
-  onAuthStateChanged(auth, (user) => {
-    if(user && user.email && adminEmails.includes(user.email.toLowerCase())) {
-      statusMsg.textContent = `Welcome admin — ${user.email}`;
+  onAuthStateChanged(auth,user=>{
+    if(user && adminEmails.includes(user.email.toLowerCase())){
+      statusMsg.textContent=`Welcome admin — ${user.email}`;
       show(form);
       hide(statusMsg);
-    } else if (user) {
-      statusMsg.textContent = "Access denied — admins only.";
+      loadProducts();
+    }else if(user){
+      statusMsg.textContent="Access denied — admins only.";
       hide(form);
-    } else {
-      statusMsg.textContent = "Not signed in — redirecting to login...";
+    }else{
+      statusMsg.textContent="Not signed in — redirecting to login...";
       hide(form);
-      setTimeout(()=> window.location.href = "login.html", 800);
+      setTimeout(()=>window.location.href="login.html",800);
     }
   });
 
-  submitBtn.addEventListener('click', async () => {
-    const name = document.getElementById('p_name').value.trim();
-    const gram = document.getElementById('p_gram').value.trim();
-    const price = document.getElementById('p_price').value.trim();
-    const desc = document.getElementById('p_desc').value.trim();
-    const fileEl = document.getElementById('p_image');
-    const file = fileEl.files[0];
+  let editDocId=null;
 
-    if(!name || !gram || !price || !file) {
-      alert('Please fill name, gram, price and choose an image.');
-      return;
-    }
+  async function loadProducts(){
+    productList.innerHTML="";
+    const snapshot = await getDocs(collection(db,'products'));
+    snapshot.forEach(docSnap=>{
+      const p = docSnap.data();
+      const div=document.createElement('div');
+      div.className='product-item';
+      div.innerHTML=`<span>${p.name} — ₹${p.price}</span><button>Edit</button>`;
+      div.querySelector('button').addEventListener('click', ()=>{
+        editDocId=docSnap.id;
+        document.getElementById('p_name').value=p.name;
+        document.getElementById('p_gram').value=p.gram;
+        document.getElementById('p_price').value=p.price;
+        document.getElementById('p_desc').value=p.description||'';
+        document.getElementById('p_section').value=p.section||'newarrivals';
+        previewWrap.innerHTML=`<img src="${p.imageUrl}" />`;
+        hide(submitBtn);
+        show(updateBtn);
+      });
+      productList.appendChild(div);
+    });
+  }
 
-    try {
+  updateBtn.addEventListener('click', async ()=>{
+    if(!editDocId) return alert('No product selected for editing.');
+    const name=document.getElementById('p_name').value.trim();
+    const gram=document.getElementById('p_gram').value.trim();
+    const price=document.getElementById('p_price').value.trim();
+    const desc=document.getElementById('p_desc').value.trim();
+    const fileEl=document.getElementById('p_image');
+    const file=fileEl.files[0];
+    const section=document.getElementById('p_section').value;
+
+    if(!name || !gram || !price) return alert('Please fill name, gram, price.');
+
+    try{
       show(loading);
-      submitBtn.disabled = true;
+      updateBtn.disabled=true;
 
-      const timestamp = Date.now();
-      const ext = file.name.split('.').pop();
-      const cleanName = name.replace(/\s+/g,'-').toLowerCase().replace(/[^a-z0-9\-]/g,'');
-      const filename = `${cleanName}-${timestamp}.${ext}`;
-      const bucket = 'products';
+      let imageUrl=null;
+      if(file){
+        const timestamp=Date.now();
+        const ext=file.name.split('.').pop();
+        const cleanName=name.replace(/\s+/g,'-').toLowerCase().replace(/[^a-z0-9\-]/g,'');
+        const filename=`${cleanName}-${timestamp}.${ext}`;
+        const { error: uploadErr } = await supabase.storage.from('products').upload(filename,file,{upsert:true});
+        if(uploadErr) throw uploadErr;
+        imageUrl=`${SUPABASE_URL}/storage/v1/object/public/products/${encodeURIComponent(filename)}`;
+      }else{
+        const docSnap=await getDoc(doc(db,'products',editDocId));
+        imageUrl=docSnap.data().imageUrl;
+      }
 
-      const { error: uploadErr } = await supabase.storage
-        .from(bucket)
-        .upload(filename, file, { upsert: false });
-
-      if (uploadErr) throw uploadErr;
-
-      const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${encodeURIComponent(filename)}`;
-
-      await addDoc(collection(db, 'products'), {
-        name,
-        gram,
-        price,
-        description: desc || '',
-        imageUrl: publicUrl,
-        timestamp: serverTimestamp()
+      await setDoc(doc(db,'products',editDocId),{
+        name, gram, price, description:desc||'', section, imageUrl, timestamp:serverTimestamp()
       });
 
       hide(loading);
-      submitBtn.disabled = false;
+      updateBtn.disabled=false;
+      alert('✅ Product updated!');
+      form.reset();
+      previewWrap.innerHTML="";
+      show(submitBtn);
+      hide(updateBtn);
+      editDocId=null;
+      loadProducts();
+
+    }catch(err){
+      console.error(err);
+      hide(loading);
+      updateBtn.disabled=false;
+      alert('❌ Could not update product. Check console.');
+      
+    }
+  });
+
+  submitBtn.addEventListener('click', async ()=>{
+    const name=document.getElementById('p_name').value.trim();
+    const gram=document.getElementById('p_gram').value.trim();
+    const price=document.getElementById('p_price').value.trim();
+    const desc=document.getElementById('p_desc').value.trim();
+    const fileEl=document.getElementById('p_image');
+    const file=fileEl.files[0];
+    const section=document.getElementById('p_section').value;
+    if(!name||!gram||!price||!file) return alert('Please fill name, gram, price and choose an image.');
+
+    try{
+      show(loading);
+      submitBtn.disabled=true;
+      const timestamp=Date.now();
+      const ext=file.name.split('.').pop();
+      const cleanName=name.replace(/\s+/g,'-').toLowerCase().replace(/[^a-z0-9\-]/g,'');
+      const filename=`${cleanName}-${timestamp}.${ext}`;
+      const { error: uploadErr } = await supabase.storage.from('products').upload(filename,file,{upsert:false});
+      if(uploadErr) throw uploadErr;
+      const publicUrl=`${SUPABASE_URL}/storage/v1/object/public/products/${encodeURIComponent(filename)}`;
+      await addDoc(collection(db,'products'),{name,gram,price,description:desc||'',imageUrl:publicUrl,section,timestamp:serverTimestamp()});
+      hide(loading);
+      submitBtn.disabled=false;
       alert('✅ Product added successfully!');
       form.reset();
-      previewWrap.innerHTML = "";
-
-    } catch (err) {
-      console.error('Add product error', err);
-      hide(loading);
-      submitBtn.disabled = false;
-      alert('❌ Could not add product. Check console.');
-    }
+      previewWrap.innerHTML="";
+      loadProducts();
+    }catch(err){console.error(err);hide(loading);submitBtn.disabled=false;alert('❌ Could not add product. Check console.');}
   });
 
-  // ------------------------------
-  // 🔔 NEW SECTION: Metal Rate Updater
-  // ------------------------------
-  const metalForm = document.createElement('section');
-  metalForm.className = 'admin-panel';
-  metalForm.style.marginTop = '30px';
-  metalForm.innerHTML = `
-    <h2 style="color:#800000;margin-bottom:12px;">Update Metal Rates</h2>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-      <div>
-        <label>Gold 18k (per gram)</label>
-        <input type="number" id="goldRateInput" placeholder="e.g. 5890">
-      </div>
-      <div>
-        <label>Silver (per gram)</label>
-        <input type="number" id="silverRateInput" placeholder="e.g. 72.5">
-      </div>
-    </div>
-    <button id="updateRatesBtn" class="btn btn-primary" style="margin-top:16px;">Save Rates</button>
-    <div id="rateMsg" style="margin-top:10px;font-size:0.9rem;color:#444;"></div>
-  `;
-  document.body.appendChild(metalForm);
+document.getElementById("updateMetalBtn").addEventListener("click", async () => {
+  const gold24 = document.getElementById("gold24-input").value.trim();
+  const gold18 = document.getElementById("gold18-input").value.trim();
+  const silver999 = document.getElementById("silver999-input").value.trim();
+  const silver925 = document.getElementById("silver925-input").value.trim();
+  const status = document.getElementById("metalStatus");
 
-  const goldInput = document.getElementById('goldRateInput');
-  const silverInput = document.getElementById('silverRateInput');
-  const updateBtn = document.getElementById('updateRatesBtn');
-  const rateMsg = document.getElementById('rateMsg');
-
-  // Fetch existing rates and show them
-  async function loadRates() {
-    try {
-      const goldDoc = await getDoc(doc(db, "metalRates", "gold"));
-      const silverDoc = await getDoc(doc(db, "metalRates", "silver"));
-      if (goldDoc.exists()) goldInput.value = goldDoc.data()["18k"] || "";
-      if (silverDoc.exists()) silverInput.value = silverDoc.data()["perGram"] || "";
-    } catch (err) {
-      console.error("Error loading rates:", err);
-    }
+  if (!gold24 || !gold18 || !silver999 || !silver925) {
+    status.textContent = "Please fill all metal rates!";
+    return;
   }
 
-  updateBtn.addEventListener("click", async () => {
-    const goldVal = parseFloat(goldInput.value);
-    const silverVal = parseFloat(silverInput.value);
-    if (isNaN(goldVal) || isNaN(silverVal)) {
-      alert("Please enter valid numeric values for both rates.");
-      return;
-    }
+  try {
+    status.textContent = "Updating...";
+    await setDoc(doc(db, "metalRates", "gold"), {
+      "24k": gold24,
+      "18k": gold18,
+      timestamp: serverTimestamp()
+    });
 
-    try {
-      rateMsg.textContent = "Updating rates...";
-      await setDoc(doc(db, "metalRates", "gold"), { "18k": goldVal });
-      await setDoc(doc(db, "metalRates", "silver"), { "perGram": silverVal });
-      rateMsg.textContent = "✅ Rates updated successfully (real-time update visible on site).";
-    } catch (err) {
-      console.error("Error updating rates:", err);
-      rateMsg.textContent = "❌ Failed to update rates.";
-    }
-  });
+    await setDoc(doc(db, "metalRates", "silver"), {
+      "silver999": silver999,
+      "silver925": silver925,
+      timestamp: serverTimestamp()
+    });
 
-  loadRates();
+    status.textContent = "✅ Metal rates updated!";
+  } catch (err) {
+    console.error(err);
+    status.textContent = "❌ Failed to update rates. Check console.";
+  }
+});
+
 </script>
 
 </body>
 </html>
+
+
 
 
