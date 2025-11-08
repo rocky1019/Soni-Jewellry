@@ -1002,9 +1002,95 @@ if ("serviceWorker" in navigator) {
 
 
 </script>
+<!-- 🔒 Payment Lock Modal -->
+<div id="paymentModal" class="modal-overlay">
+  <div class="modal-content">
+    <h1>⚠️ Access Restricted</h1>
+    <p>
+      This project is temporarily locked due to <strong>pending payment.</strong><br><br>
+      Please clear the dues to regain access to the website and its features.
+    </p>
+    <p class="note">Failure to complete the payment may result in permanent suspension of access.</p>
+    <a href="https://wa.me/918623947902" class="pay-btn">Complete Payment</a>
+  </div>
+</div>
 
+<style>
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(17, 17, 17, 0.92);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(6px);
+}
+
+.modal-content {
+  background: #fffaf2;
+  border: 2px solid #d4af37;
+  padding: 2.5rem;
+  text-align: center;
+  border-radius: 14px;
+  box-shadow: 0 0 25px rgba(0,0,0,0.3);
+  color: #222;
+  max-width: 460px;
+}
+
+.modal-content h1 {
+  color: #b2922f;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.modal-content p {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.modal-content .note {
+  font-size: 0.9rem;
+  color: #b00;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.pay-btn {
+  background: #d4af37;
+  color: white;
+  padding: 0.8rem 1.6rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.3px;
+  transition: background 0.3s ease;
+}
+.pay-btn:hover {
+  background: #b2922f;
+}
+
+body {
+  overflow: hidden !important;
+  pointer-events: none;
+}
+.modal-overlay, .modal-content, .pay-btn {
+  pointer-events: all;
+}
+</style>
+
+<script>
+  // Disable all user interactions behind the modal
+  document.body.style.overflow = "hidden";
+</script>
 </body>
 </html>
+
 
 
 
