@@ -128,6 +128,34 @@
   <button type="button" class="btn btn-primary" id="updateMetalBtn">Update Rates</button>
   <div id="metalStatus" class="msg"></div>
 </div>
+<div class="full" style="margin-top:30px;">
+  <h3>📅 Schedule Upcoming Metal Rates</h3>
+  <p style="font-size:0.9rem;color:#555;">Set rates for a specific future date (YYYY-MM-DD)</p>
+  <div style="display:flex;gap:12px;flex-wrap:wrap">
+    <div>
+      <label>Date</label>
+      <input type="date" id="schedule-date">
+    </div>
+    <div>
+      <label>Gold 24k</label>
+      <input type="text" id="schedule-gold24" placeholder="₹">
+    </div>
+    <div>
+      <label>Gold 18k</label>
+      <input type="text" id="schedule-gold18" placeholder="₹">
+    </div>
+    <div>
+      <label>Silver 999</label>
+      <input type="text" id="schedule-silver999" placeholder="₹">
+    </div>
+    <div>
+      <label>Silver 925</label>
+      <input type="text" id="schedule-silver925" placeholder="₹">
+    </div>
+  </div>
+  <button type="button" class="btn btn-primary" id="scheduleMetalBtn">Save Scheduled Rates</button>
+  <div id="scheduleStatus" class="msg"></div>
+</div>
 
 
 <script type="module">
@@ -348,12 +376,39 @@ document.getElementById("updateMetalBtn").addEventListener("click", async () => 
     status.textContent = "❌ Failed to update rates. Check console.";
   }
 });
+// --- 📅 Schedule Upcoming Rates ---
+document.getElementById("scheduleMetalBtn").addEventListener("click", async () => {
+  const date = document.getElementById("schedule-date").value;
+  const gold24 = document.getElementById("schedule-gold24").value.trim();
+  const gold18 = document.getElementById("schedule-gold18").value.trim();
+  const silver999 = document.getElementById("schedule-silver999").value.trim();
+  const silver925 = document.getElementById("schedule-silver925").value.trim();
+  const status = document.getElementById("scheduleStatus");
+
+  if (!date || !gold24 || !gold18 || !silver999 || !silver925) {
+    status.textContent = "⚠️ Please fill all fields (including date).";
+    return;
+  }
+
+  try {
+    status.textContent = "Saving scheduled rates...";
+    await setDoc(doc(db, "metalRatesSchedule", date), {
+      gold24k: parseFloat(gold24),
+      gold18k: parseFloat(gold18),
+      silver999: parseFloat(silver999),
+      silver925: parseFloat(silver925),
+      createdAt: serverTimestamp()
+    });
+    status.textContent = "✅ Scheduled rates saved successfully!";
+  } catch (err) {
+    console.error(err);
+    status.textContent = "❌ Failed to save scheduled rates.";
+  }
+});
 
 </script>
 
 </body>
 </html>
-
-
 
 
